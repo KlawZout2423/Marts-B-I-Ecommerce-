@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
@@ -10,15 +9,7 @@ import { InventoryProvider } from "@/context/InventoryContext";
 import VisualSaveBar from "@/components/VisualSaveBar";
 import BackButton from "@/components/BackButton";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
 
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "MARTS | Business & Imports",
@@ -33,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
+    <html lang="en">
       <body>
         <Toaster position="top-center" richColors />
         <CartProvider>
