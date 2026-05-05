@@ -39,12 +39,16 @@ async function getPageContent() {
   }
 }
 
+import { Suspense } from "react";
+
 export default async function Home() {
   const blocks = await getPageContent();
 
   return (
     <div className={styles.page}>
-      <Navbar />
+      <Suspense fallback={null}>
+        <Navbar />
+      </Suspense>
       <main>
         <DynamicContent blocks={blocks} />
       </main>
