@@ -25,7 +25,6 @@ export default function LoginPage() {
       const { data, error: authError } = await authClient.signIn.email({
         email,
         password,
-        callbackURL: "/",
       });
 
       if (authError) {
@@ -36,9 +35,9 @@ export default function LoginPage() {
         
         // Check role to determine destination
         if (data?.user && (data.user as any).role === "admin") {
-          router.push("/admin");
+          window.location.href = "/admin";
         } else {
-          router.push("/");
+          window.location.href = "/";
         }
       }
     } catch (err) {

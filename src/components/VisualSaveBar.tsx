@@ -4,12 +4,13 @@ import { useEditMode } from "@/context/EditModeContext";
 import { Save, Edit3, Eye, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function VisualSaveBar() {
   const { isEditMode, toggleEditMode, pageBlocks, canEdit, activePage } = useEditMode();
   const [isSaving, setIsSaving] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   if (!canEdit) return null;
 
@@ -147,7 +148,10 @@ export default function VisualSaveBar() {
             </button>
 
             <button 
-              onClick={toggleEditMode}
+              onClick={() => {
+                toggleEditMode();
+                router.push("/admin/content");
+              }}
               style={{
                 background: 'rgba(255,255,255,0.1)',
                 color: 'white',

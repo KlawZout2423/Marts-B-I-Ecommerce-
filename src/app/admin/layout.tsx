@@ -38,8 +38,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return <>{children}</>;
   }
 
-  if (isPending || !session?.user || (session.user as any).role !== "admin") {
+  if (isPending) {
     return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>Loading...</div>;
+  }
+
+  if (!session?.user || (session.user as any).role !== "admin") {
+    return null; // Let useEffect handle the redirect
   }
 
   const navItems = [
