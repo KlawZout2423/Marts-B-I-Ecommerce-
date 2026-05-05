@@ -1,0 +1,30 @@
+.marqueeContainer {
+  overflow: hidden;
+  background: var(--accent-soft);
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  white-space: nowrap;
+}
+
+.marquee {
+  display: flex;
+  align-items: center;
+}
+
+.item {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--accent-blue);
+  margin-right: 2rem;
+  font-family: var(--font-outfit);
+  letter-spacing: 0.1em;
+  opacity: 0.8;
+}
+
+.dot {
+  margin-left: 1.5rem;
+  color: var(--accent-indigo);
+  opacity: 0.5;
+}

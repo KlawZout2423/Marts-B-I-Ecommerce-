@@ -1,0 +1,159 @@
+.section {
+  padding: 40px 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* ── Card ───────────────────────────────────────────── */
+.card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 280px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.22);
+}
+
+/* image zoom on hover */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: inherit;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 0;
+}
+
+.card:hover::before {
+  transform: scale(1.06);
+}
+
+/* ── Overlay ───────────────────────────────────────── */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 20px;
+}
+
+/* ── Content ───────────────────────────────────────── */
+.content {
+  position: relative;
+  z-index: 2;
+  padding: 36px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+/* ── Themes ────────────────────────────────────────── */
+.light .title,
+.light .subtitle {
+  color: #ffffff;
+}
+
+.dark .title,
+.dark .subtitle {
+  color: #0f172a;
+}
+
+/* ── Badge ─────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 999px;
+  width: fit-content;
+}
+
+/* ── Title ─────────────────────────────────────────── */
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0;
+}
+
+/* ── Subtitle ──────────────────────────────────────── */
+.subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0.82;
+  margin: 0;
+}
+
+/* ── CTA Button ────────────────────────────────────── */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 10px 22px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  color: #ffffff;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  width: fit-content;
+  backdrop-filter: blur(6px);
+  transition: background 0.25s ease, border-color 0.25s ease,
+    transform 0.2s ease;
+}
+
+.cta:hover {
+  background: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.9);
+  transform: translateX(3px);
+}
+
+/* dark-theme CTA */
+.dark .cta {
+  background: rgba(0, 0, 0, 0.12);
+  border-color: rgba(0, 0, 0, 0.4);
+  color: #0f172a;
+}
+
+.dark .cta:hover {
+  background: rgba(0, 0, 0, 0.22);
+}
+
+/* ── Responsive ────────────────────────────────────── */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .card {
+    min-height: 220px;
+  }
+
+  .content {
+    padding: 28px 24px;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+}

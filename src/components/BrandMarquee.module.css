@@ -1,0 +1,50 @@
+.section {
+  padding: 48px 0;
+  background: var(--bg-soft);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.header p {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.marqueeWrapper {
+  width: 100%;
+  display: flex;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.marquee {
+  display: flex;
+  gap: 80px;
+  white-space: nowrap;
+}
+
+.brandName {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--border);
+  transition: color 0.3s ease;
+  cursor: default;
+}
+
+.brandName:hover {
+  color: var(--text-muted);
+}
