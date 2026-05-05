@@ -50,9 +50,8 @@ export default function CategoryTabs({ id, content }: { id?: string, content?: a
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.05 }}
+              transition={{ delay: i * 0.05, type: "spring", stiffness: 400, damping: 10 }}
               whileHover={{ scale: 1.05, y: -5 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
               <div className={styles.iconBox}>
                 <cat.icon size={24} strokeWidth={1.5} />
