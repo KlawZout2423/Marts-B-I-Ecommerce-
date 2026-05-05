@@ -6,7 +6,6 @@ import styles from './checkout.module.css';
 import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
 
-import { usePaystackPayment } from "react-paystack";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
@@ -37,32 +36,10 @@ export default function CheckoutPage() {
     }
   }, [session]);
 
-  const config = {
-    reference: (new Date()).getTime().toString(),
-    email: formData.email,
-    amount: Math.round(totalPrice * 100), // Paystack expects amount in kobo (NGN) or cents (USD)
-    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "",
-  };
-
-  const initializePayment = usePaystackPayment(config);
-
-  const onSuccess = (reference: any) => {
-    console.log("Payment successful:", reference);
-    // Here you would normally create an order in your DB
-    router.push("/account/orders?success=true");
-  };
-
-  const onClose = () => {
-    console.log("Payment closed");
-  };
-
   const handleCheckout = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!config.publicKey || config.publicKey.includes("your_actual_public_key")) {
-      alert("Please configure your Paystack Public Key in the .env file.");
-      return;
-    }
-    initializePayment({onSuccess, onClose});
+    alert("Payment integration coming soon! This is a demo checkout.");
+    router.push("/account/orders?success=true");
   };
 
   if (loading) {
@@ -172,7 +149,7 @@ export default function CheckoutPage() {
             </section>
 
             <button type="submit" className={styles.submitButton}>
-              Pay with Paystack - ${totalPrice.toFixed(2)}
+              Place Order - ${totalPrice.toFixed(2)}
             </button>
           </form>
         </div>
