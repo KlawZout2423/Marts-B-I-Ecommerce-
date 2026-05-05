@@ -9,6 +9,7 @@ export type Product = {
   stock: number;
   status: string;
   image: string;
+  category: string;
   placements: ProductPlacement[];
 };
 
@@ -21,6 +22,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     stock: 45, 
     status: "In Stock", 
     image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=80",
+    category: "Electronics",
     placements: ["homepage", "featured"]
   },
   { 
@@ -31,6 +33,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     stock: 12, 
     status: "Low Stock", 
     image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80",
+    category: "Electronics",
     placements: ["new_arrivals"]
   },
   { 
@@ -41,6 +44,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     stock: 0, 
     status: "Out of Stock", 
     image: "https://images.unsplash.com/photo-1583394838336-397577f14f40?w=800&q=80",
+    category: "Electronics",
     placements: ["hot_sale"]
   },
 ];

@@ -21,7 +21,7 @@ export default function InventoryPage() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   // Form State
-  const [formData, setFormData] = useState<Partial<Product>>({ placements: [] });
+  const [formData, setFormData] = useState<Partial<Product>>({ placements: [], category: "Uncategorized" });
 
   const filteredProducts = products.filter(p => 
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -37,6 +37,7 @@ export default function InventoryPage() {
       price: "",
       stock: 0,
       image: "",
+      category: "Uncategorized",
       placements: []
     });
     setIsModalOpen(true);
