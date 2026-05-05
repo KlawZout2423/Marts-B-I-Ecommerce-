@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useEditMode } from "@/context/EditModeContext";
@@ -61,7 +61,9 @@ export default function ContactPage() {
 
   return (
     <main className={styles.page}>
-      <Navbar />
+      <Suspense fallback={null}>
+        <Navbar />
+      </Suspense>
 
       {/* 🦸 Hero */}
       <section className={styles.hero}>
