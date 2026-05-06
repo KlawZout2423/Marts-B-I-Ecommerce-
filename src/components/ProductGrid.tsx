@@ -52,11 +52,18 @@ export default function ProductGrid({
 
     fetch("/api/products")
       .then((res) => res.json())
-      .then((data: any[]) => {
+      .then((data) => {
+        if (!Array.isArray(data)) {
+          console.error("API returned non-array data:", data);
+          setProducts([]);
+          setLoading(false);
+          return;
+        }
+
         let filtered = data;
 
         if (filterTag) {
-          filtered = data.filter(p => {
+          filtered = data.filter((p: any) => {
             // Priority 1: Check the placements array (from DB)
             if (p.placements && Array.isArray(p.placements)) {
               if (p.placements.includes(filterTag)) return true;
@@ -81,6 +88,11 @@ export default function ProductGrid({
 
         if (limit) filtered = filtered.slice(0, limit);
         setProducts(filtered);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch products:", err);
+        setProducts([]);
         setLoading(false);
       });
   }, [filterTag, limit, initialProducts]);

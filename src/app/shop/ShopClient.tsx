@@ -67,8 +67,18 @@ export default function ShopClient() {
   useEffect(() => {
     fetch("/api/products")
       .then((res) => res.json())
-      .then((data: Product[]) => {
-        setAllProducts(data);
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setAllProducts(data);
+        } else {
+          console.error("Shop API returned non-array data:", data);
+          setAllProducts([]);
+        }
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error("Shop API fetch failed:", err);
+        setAllProducts([]);
         setIsLoading(false);
       });
   }, []);

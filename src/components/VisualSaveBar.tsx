@@ -74,24 +74,9 @@ export default function VisualSaveBar() {
       )}
 
       {isEditMode && (
-        <div style={{
-          position: 'fixed',
-          bottom: '100px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 99999,
-          background: '#0f172a',
-          padding: '8px 8px 8px 24px',
-          borderRadius: '100px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '24px',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-          border: '1px solid rgba(255,255,255,0.1)',
-          animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
-        }}>
+        <div className="save-bar">
           {/* Quick Page Switcher */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingRight: '24px', borderRight: '1px solid rgba(255,255,255,0.1)' }}>
+          <div className="page-switcher">
             <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Editing:</span>
             <div style={{ display: 'flex', gap: '4px' }}>
               {[
@@ -144,7 +129,9 @@ export default function VisualSaveBar() {
               }}
             >
               {isSaving ? <div className="spinner" /> : <Save size={16} />}
-              {isSaving ? "Publishing..." : "Publish Changes"}
+              <span className="publish-btn-text">
+                {isSaving ? "Publishing..." : "Publish Changes"}
+              </span>
             </button>
 
             <button 
@@ -170,10 +157,54 @@ export default function VisualSaveBar() {
       )}
 
       <style jsx>{`
+        .save-bar {
+          position: fixed;
+          bottom: 110px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 99999;
+          background: #0f172a;
+          padding: 8px 8px 8px 24px;
+          borderRadius: 100px;
+          display: flex;
+          align-items: center;
+          gap: 24px;
+          boxShadow: 0 20px 40px rgba(0,0,0,0.3);
+          border: 1px solid rgba(255,255,255,0.1);
+          animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          width: auto;
+          white-space: nowrap;
+        }
+
+        .page-switcher {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding-right: 24px;
+          border-right: 1px solid rgba(255,255,255,0.1);
+        }
+
         @keyframes slideUp { from { transform: translate(-50%, 100px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
         @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
         .spinner { width: 16px; height: 16px; border: 2px solid white; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+          .save-bar {
+            bottom: 100px;
+            padding: 8px;
+            gap: 12px;
+            width: calc(100% - 40px);
+            max-width: 350px;
+            justify-content: space-between;
+          }
+          .page-switcher {
+            display: none;
+          }
+          .publish-btn-text {
+            display: none;
+          }
+        }
       `}</style>
     </>
   );

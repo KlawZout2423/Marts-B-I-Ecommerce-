@@ -18,13 +18,17 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   // Map DB product to the Product type expected by the component
   const product: Product = {
     ...dbProduct,
-    originalPrice: dbProduct.salePrice ? dbProduct.price : undefined,
-    price: dbProduct.salePrice || dbProduct.price,
-    badge: dbProduct.status === "active" ? undefined : dbProduct.status,
-    reviewCount: 0, // Mocked for now
-    rating: 4.5, // Mocked for now
+    originalPrice: dbProduct.salePrice ? Number(dbProduct.price) : undefined,
+    price: Number(dbProduct.salePrice || dbProduct.price),
+    description: dbProduct.description || "Premium product from MARTS collection.",
+    features: JSON.parse(dbProduct.features || "[]"),
+    specs: JSON.parse(dbProduct.specs || "{}"),
+    badge: (dbProduct.status === "active" ? undefined : dbProduct.status) as any,
+    reviewCount: 0, 
+    rating: 4.5,
     placements: JSON.parse(dbProduct.placements || "[]"),
-  } as any;
+    image: dbProduct.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80",
+  };
 
   return (
     <>

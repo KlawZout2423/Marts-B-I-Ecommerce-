@@ -98,12 +98,16 @@ export default function ProductDetail({ product }: { product: Product }) {
             <div className={styles.features}>
               <h4 className={styles.sectionTitle}>Highlights</h4>
               <div className={styles.featureGrid}>
-                {product.features.map((f, i) => (
-                  <div key={i} className={styles.featureItem}>
-                    <Check size={18} className={styles.check} />
-                    <span>{f}</span>
-                  </div>
-                ))}
+                {Array.isArray(product.features) && product.features.length > 0 ? (
+                  product.features.map((f, i) => (
+                    <div key={i} className={styles.featureItem}>
+                      <Check size={18} className={styles.check} />
+                      <span>{f}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p style={{ color: '#94a3b8', fontSize: '14px' }}>No highlights listed.</p>
+                )}
               </div>
             </div>
 
@@ -134,12 +138,16 @@ export default function ProductDetail({ product }: { product: Product }) {
             <div className={styles.specs}>
               <h4 className={styles.sectionTitle}>Specifications</h4>
               <div className={styles.specsList}>
-                {Object.entries(product.specs).map(([key, val]) => (
-                  <div key={key} className={styles.specRow}>
-                    <span className={styles.specKey}>{key}</span>
-                    <span className={styles.specVal}>{val}</span>
-                  </div>
-                ))}
+                {product.specs && typeof product.specs === 'object' && Object.keys(product.specs).length > 0 ? (
+                  Object.entries(product.specs).map(([key, val]) => (
+                    <div key={key} className={styles.specRow}>
+                      <span className={styles.specKey}>{key}</span>
+                      <span className={styles.specVal}>{val}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p style={{ color: '#94a3b8', fontSize: '14px' }}>Specifications not provided.</p>
+                )}
               </div>
             </div>
           </motion.div>
