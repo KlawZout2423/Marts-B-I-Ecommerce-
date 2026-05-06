@@ -46,12 +46,45 @@ export default function ProductGrid({
   });
 
   useEffect(() => {
-    if (initialProducts) {
-      setProducts(initialProducts);
+    const processProducts = (data: any[]) => {
+      let filtered = data;
+
+      if (filterTag) {
+        filtered = data.filter((p: any) => {
+          // Priority 1: Check the placements array (from DB)
+          if (p.placements && Array.isArray(p.placements)) {
+            if (p.placements.includes(filterTag)) return true;
+            // Handle "new" vs "new_arrivals" mapping
+            if (filterTag === "new" && p.placements.includes("new_arrivals")) return true;
+            if (filterTag === "new_arrivals" && p.placements.includes("new")) return true;
+          }
+
+          // Priority 2: Fallback to legacy hardcoded logic
+          if (filterTag === "bestseller") {
+            return (p.rating && p.rating >= 4.7) || p.badge === "Best Seller";
+          } else if (filterTag === "new" || filterTag === "new_arrivals") {
+            return p.badge === "New" || p.id === "2" || p.id === "3";
+          } else if (filterTag === "featured") {
+            return p.badge === "Best Seller" || p.id === "4";
+          } else if (filterTag === "hot_sale") {
+            return p.originalPrice || p.id === "1";
+          }
+          
+          return true;
+        });
+      }
+
+      if (limit) filtered = filtered.slice(0, limit);
+      setProducts(filtered);
       setLoading(false);
+    };
+
+    if (initialProducts) {
+      processProducts(initialProducts);
       return;
     }
 
+    setLoading(true);
     fetch("/api/products")
       .then((res) => res.json())
       .then((data) => {
@@ -61,36 +94,7 @@ export default function ProductGrid({
           setLoading(false);
           return;
         }
-
-        let filtered = data;
-
-        if (filterTag) {
-          filtered = data.filter((p: any) => {
-            // Priority 1: Check the placements array (from DB)
-            if (p.placements && Array.isArray(p.placements)) {
-              if (p.placements.includes(filterTag)) return true;
-              // Handle "new" vs "new_arrivals" mapping
-              if (filterTag === "new" && p.placements.includes("new_arrivals")) return true;
-            }
-
-            // Priority 2: Fallback to legacy hardcoded logic
-            if (filterTag === "bestseller") {
-              return (p.rating && p.rating >= 4.7) || p.badge === "Best Seller";
-            } else if (filterTag === "new" || filterTag === "new_arrivals") {
-              return p.badge === "New" || p.id === "2" || p.id === "3";
-            } else if (filterTag === "featured") {
-              return p.badge === "Best Seller" || p.id === "4";
-            } else if (filterTag === "hot_sale") {
-              return p.originalPrice || p.id === "1";
-            }
-            
-            return true;
-          });
-        }
-
-        if (limit) filtered = filtered.slice(0, limit);
-        setProducts(filtered);
-        setLoading(false);
+        processProducts(data);
       })
       .catch(err => {
         console.error("Failed to fetch products:", err);

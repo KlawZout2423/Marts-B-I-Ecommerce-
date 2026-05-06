@@ -67,16 +67,16 @@ export default function DynamicContent({ blocks: initialBlocks }: DynamicContent
             content = <PromoBannerCards key={`content-${block.id}`} id={block.id} banners={promoBannersOverride} />;
             break;
           case "bestsellers":
-            content = <ProductGrid key={`content-${block.id}`} title="Best Sellers" filterTag="bestseller" limit={4} isCarouselOnMobile={true} products={allProducts.filter(p => p.placements?.includes('bestseller'))} isLoading={productsLoading} />;
+            content = <ProductGrid key={`content-${block.id}`} title="Best Sellers" filterTag="bestseller" limit={4} isCarouselOnMobile={true} products={allProducts} isLoading={productsLoading} />;
             break;
           case "featuredProducts":
-            content = <ProductGrid key={`content-${block.id}`} title="Featured Products" filterTag="featured" limit={4} isCarouselOnMobile={true} products={allProducts.filter(p => p.placements?.includes('featured'))} isLoading={productsLoading} />;
+            content = <ProductGrid key={`content-${block.id}`} title="Featured Products" filterTag="featured" limit={4} isCarouselOnMobile={true} products={allProducts} isLoading={productsLoading} />;
             break;
           case "newArrivals":
-            content = <ProductGrid key={`content-${block.id}`} title="New Arrivals" filterTag="new" limit={4} isCarouselOnMobile={true} products={allProducts.filter(p => p.placements?.includes('new'))} isLoading={productsLoading} />;
+            content = <ProductGrid key={`content-${block.id}`} title="New Arrivals" filterTag="new" limit={4} isCarouselOnMobile={true} products={allProducts} isLoading={productsLoading} />;
             break;
           case "hotSale":
-            content = <ProductGrid key={`content-${block.id}`} title="Hot Sale 🔥" filterTag="hot_sale" limit={4} isCarouselOnMobile={true} products={allProducts.filter(p => p.placements?.includes('hot_sale'))} isLoading={productsLoading} />;
+            content = <ProductGrid key={`content-${block.id}`} title="Hot Sale 🔥" filterTag="hot_sale" limit={4} isCarouselOnMobile={true} products={allProducts} isLoading={productsLoading} />;
             break;
           case "categoryHighlights":
           case "categories":
