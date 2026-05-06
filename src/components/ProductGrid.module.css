@@ -25,7 +25,7 @@
 }
 
 /* ── Default grid (4-col, used for homepage) ── */
-.grid {
+.grid, .carousel {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
@@ -61,14 +61,16 @@
 /* ── Responsive ─────────────── */
 @media (max-width: 1200px) {
   .grid,
-  .standardGrid {
+  .standardGrid,
+  .carousel {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
 @media (max-width: 900px) {
   .grid,
-  .standardGrid {
+  .standardGrid,
+  .carousel {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
@@ -81,7 +83,7 @@
     gap: 12px;
   }
 
-  /* Optional Carousel behavior on mobile */
+  /* Carousel behavior ONLY on mobile */
   .carousel {
     display: flex !important;
     overflow-x: auto;
