@@ -22,7 +22,17 @@ const TwitterIcon = () => (
   </svg>
 );
 
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+
 export default function Footer() {
+  const [openSection, setOpenSection] = useState<string | null>(null);
+
+  const toggleSection = (name: string) => {
+    if (window.innerWidth > 768) return;
+    setOpenSection(openSection === name ? null : name);
+  };
+
   return (
     <footer className={styles.footer}>
       <div className={`${styles.container} container`}>
@@ -40,9 +50,12 @@ export default function Footer() {
           </div>
 
           {/* Customer Service */}
-          <div>
-            <h4>Customer Service</h4>
-            <ul>
+          <div className={styles.footerSection}>
+            <h4 onClick={() => toggleSection('customer')}>
+              Customer Service
+              <ChevronDown size={16} className={`${styles.chevron} ${openSection === 'customer' ? styles.chevronOpen : ""}`} />
+            </h4>
+            <ul className={`${styles.list} ${openSection === 'customer' ? styles.listOpen : ""}`}>
               <li>FAQs</li>
               <li>Shipping Info</li>
               <li>Returns</li>
@@ -50,19 +63,22 @@ export default function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h4>Quick Links</h4>
-            <ul>
+          <div className={styles.footerSection}>
+            <h4 onClick={() => toggleSection('links')}>
+              Quick Links
+              <ChevronDown size={16} className={`${styles.chevron} ${openSection === 'links' ? styles.chevronOpen : ""}`} />
+            </h4>
+            <ul className={`${styles.list} ${openSection === 'links' ? styles.listOpen : ""}`}>
               <li>About Us</li>
               <li>Privacy Policy</li>
-              <li>Terms &amp; Conditions</li>
+              <li>Terms & Conditions</li>
             </ul>
           </div>
 
           {/* Newsletter */}
           <div className={styles.newsletter}>
             <h4>Newsletter</h4>
-            <p>Subscribe for Updates &amp; Offers</p>
+            <p>Subscribe for Updates & Offers</p>
             <div className={styles.form}>
               <input type="email" placeholder="Email address..." className={styles.input} />
               <button className={styles.subscribeBtn}>Subscribe</button>

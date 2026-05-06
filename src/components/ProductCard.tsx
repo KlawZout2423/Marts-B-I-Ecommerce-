@@ -84,7 +84,7 @@ export default function ProductCard({ product, index = 0, className }: ProductCa
         <div className={styles.priceRow}>
           <div className={styles.pricing}>
             <span className={styles.currentPrice}>${product.price}</span>
-            {product.originalPrice && (
+            {product.originalPrice && Number(product.originalPrice) !== Number(product.price) && (
               <span className={styles.oldPrice}>${product.originalPrice}</span>
             )}
           </div>
@@ -103,7 +103,7 @@ export default function ProductCard({ product, index = 0, className }: ProductCa
             <Star size={10} fill="#f59e0b" color="#f59e0b" />
             <span>{product.rating}</span>
           </div>
-          <span className={styles.soldCount}>100+ sold</span>
+          <div className={styles.soldBadge}>100+ sold</div>
         </div>
       </div>
     </motion.div>
