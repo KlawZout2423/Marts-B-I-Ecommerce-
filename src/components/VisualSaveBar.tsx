@@ -53,7 +53,7 @@ export default function VisualSaveBar() {
             position: 'fixed',
             bottom: '100px',
             right: '24px',
-            zIndex: 6000,
+            zIndex: 2500,
             background: '#0f172a',
             color: 'white',
             width: '56px',
@@ -162,14 +162,14 @@ export default function VisualSaveBar() {
           bottom: 110px;
           left: 50%;
           transform: translateX(-50%);
-          z-index: 99999;
+          z-index: 2500;
           background: #0f172a;
           padding: 8px 8px 8px 24px;
-          borderRadius: 100px;
+          border-radius: 100px;
           display: flex;
           align-items: center;
           gap: 24px;
-          boxShadow: 0 20px 40px rgba(0,0,0,0.3);
+          box-shadow: 0 20px 40px rgba(0,0,0,0.3);
           border: 1px solid rgba(255,255,255,0.1);
           animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
           width: auto;
