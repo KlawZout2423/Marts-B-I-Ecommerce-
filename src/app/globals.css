@@ -143,3 +143,9 @@ img {
 .btn-secondary:hover {
   background: var(--bg-soft);
 }
+
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 120px;
+  }
+}
