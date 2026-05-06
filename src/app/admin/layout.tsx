@@ -26,13 +26,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     // Skip auth check if we are on the admin login page itself
     if (pathname === "/admin/login") return;
 
+    let redirectTimer: NodeJS.Timeout;
+
     // Only run the check once isPending is fully resolved
     if (!isPending) {
       if (!session?.user) {
-        // Redirect to login — no session found
-        router.push("/admin/login");
+        // We give it a tiny 1000ms grace period just in case of a hydration race condition
+        redirectTimer = setTimeout(async () => {
+          const freshSession = await authClient.getSession();
+          if (!freshSession?.data?.user) {
+             console.log("No session found after retry, redirecting to admin login");
+             router.push("/admin/login");
+          }
+        }, 1000);
       }
     }
+
+    return () => clearTimeout(redirectTimer);
   }, [session, isPending, router, pathname]);
 
   // If we are on the admin login page, just render the login page without the sidebar
