@@ -212,6 +212,28 @@ export default function ShopClient() {
 
             {/* Content Area */}
             <div className={styles.contentArea}>
+              {/* Mobile Category Scroll */}
+              <div className={styles.mobileCategoryScroll}>
+                {categories.map((cat) => {
+                  const Icon = cat.icon;
+                  return (
+                    <button
+                      key={cat.name}
+                      className={`${styles.mobileCatItem} ${activeCategory === cat.name ? styles.activeMobileCat : ""}`}
+                      onClick={() => {
+                        setActiveCategory(cat.name);
+                        if (cat.name === "All") {
+                          setSearchQuery("");
+                          setPriceRange([0, 5000]);
+                        }
+                      }}
+                    >
+                      <Icon size={16} /> {cat.name}
+                    </button>
+                  );
+                })}
+              </div>
+
               <div className={styles.contentHeader}>
                 <h2 className={styles.productsHeading}>Products</h2>
                 <div className={styles.searchWrapper}>
