@@ -27,14 +27,23 @@ import styles from "./ShopPage.module.css";
 function ShopContent() {
   const searchParams = useSearchParams();
   const initialFilter = searchParams.get("filter");
+  const initialSearch = searchParams.get("search") || "";
 
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [priceRange, setPriceRange] = useState([0, 1000]);
+
+  // Sync searchQuery with URL param when it changes
+  useEffect(() => {
+    const s = searchParams.get("search");
+    if (s !== null) {
+      setSearchQuery(s);
+    }
+  }, [searchParams]);
 
 
   const categories = [

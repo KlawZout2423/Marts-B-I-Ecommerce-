@@ -1,0 +1,130 @@
+.page {
+  min-height: 100vh;
+  background: var(--background, #ffffff);
+  color: var(--foreground, #0f172a);
+}
+
+.searchContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 80px 20px 120px;
+}
+
+.header {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+.searchBox {
+  position: relative;
+  margin-bottom: 60px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 20px 60px 20px 25px;
+  font-size: 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 20px;
+  background: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #0f172a;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.searchIcon {
+  position: absolute;
+  right: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.sectionTitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  margin-bottom: 20px;
+}
+
+.tagGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag {
+  padding: 8px 16px;
+  background: #f1f5f9;
+  border-radius: 100px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #475569;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.tag:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.trendingItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+  color: #475569;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.trendingItem:hover {
+  color: #0f172a;
+}
+
+.trendingIcon {
+  color: #94a3b8;
+}
+
+@media (max-width: 640px) {
+  .searchContainer {
+    padding-top: 40px;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .searchInput {
+    padding: 16px 50px 16px 20px;
+    font-size: 1.1rem;
+  }
+}
