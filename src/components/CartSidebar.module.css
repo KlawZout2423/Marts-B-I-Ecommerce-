@@ -238,4 +238,8 @@
   .sidebar {
     max-width: 100%;
   }
+
+  .footer {
+    padding-bottom: 100px; /* clears the mobile bottom nav bar */
+  }
 }
