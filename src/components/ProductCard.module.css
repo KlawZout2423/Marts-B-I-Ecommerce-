@@ -197,29 +197,15 @@
   .favoriteBtn {
     opacity: 1;
     transform: translateY(0);
-    background: white;
   }
 
   .cartBar {
     transform: translateY(0);
-    background: #0f172a;
-    position: relative;
-    margin-top: 0.5rem;
-    border-radius: 8px;
     opacity: 1;
-    padding: 0.6rem;
   }
 
   .card:hover {
     transform: none;
-  }
-  
-  .name {
-    white-space: normal;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
   }
 }
 
