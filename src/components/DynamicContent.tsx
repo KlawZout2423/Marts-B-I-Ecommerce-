@@ -24,6 +24,8 @@ interface DynamicContentProps {
 export default function DynamicContent({ blocks: initialBlocks }: DynamicContentProps) {
   const { isEditMode, pageBlocks, setPageBlocks, addBlock } = useEditMode();
   const [isInitialized, setIsInitialized] = useState(false);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
 
   // Initialize context state with the SSR-loaded blocks
   useEffect(() => {
@@ -32,6 +34,17 @@ export default function DynamicContent({ blocks: initialBlocks }: DynamicContent
       setIsInitialized(true);
     }
   }, [initialBlocks, isInitialized, setPageBlocks]);
+
+  // Performance Optimization: Fetch all products once for all grids
+  useEffect(() => {
+    fetch("/api/products")
+      .then(res => res.json())
+      .then(data => {
+        setAllProducts(Array.isArray(data) ? data : []);
+        setProductsLoading(false);
+      })
+      .catch(() => setProductsLoading(false));
+  }, []);
 
   // Use state blocks if initialized, otherwise fallback to props to prevent hydration mismatch
   const blocksToRender = isInitialized && pageBlocks.length > 0 ? pageBlocks : (initialBlocks || []);
@@ -54,16 +67,16 @@ export default function DynamicContent({ blocks: initialBlocks }: DynamicContent
             content = <PromoBannerCards key={`content-${block.id}`} id={block.id} banners={promoBannersOverride} />;
             break;
           case "bestsellers":
-            content = <ProductGrid key={`content-${block.id}`} title="Best Sellers" filterTag="bestseller" limit={4} isCarouselOnMobile={true} />;
+            content = <ProductGrid key={`content-${block.id}`} title="Best Sellers" filterTag="bestseller" limit={4} isCarouselOnMobile={true} products={allProducts.filter(p => p.placements?.includes('bestseller'))} isLoading={productsLoading} />;
             break;
           case "featuredProducts":
-            content = <ProductGrid key={`content-${block.id}`} title="Featured Products" filterTag="featured" limit={4} isCarouselOnMobile={true} />;
+            content = <ProductGrid key={`content-${block.id}`} title="Featured Products" filterTag="featured" limit={4} isCarouselOnMobile={true} products={allProducts.filter(p => p.placements?.includes('featured'))} isLoading={productsLoading} />;
             break;
           case "newArrivals":
-            content = <ProductGrid key={`content-${block.id}`} title="New Arrivals" filterTag="new" limit={4} isCarouselOnMobile={true} />;
+            content = <ProductGrid key={`content-${block.id}`} title="New Arrivals" filterTag="new" limit={4} isCarouselOnMobile={true} products={allProducts.filter(p => p.placements?.includes('new'))} isLoading={productsLoading} />;
             break;
           case "hotSale":
-            content = <ProductGrid key={`content-${block.id}`} title="Hot Sale 🔥" filterTag="hot_sale" limit={4} isCarouselOnMobile={true} />;
+            content = <ProductGrid key={`content-${block.id}`} title="Hot Sale 🔥" filterTag="hot_sale" limit={4} isCarouselOnMobile={true} products={allProducts.filter(p => p.placements?.includes('hot_sale'))} isLoading={productsLoading} />;
             break;
           case "categoryHighlights":
           case "categories":
