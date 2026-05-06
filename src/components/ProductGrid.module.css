@@ -83,15 +83,16 @@
 
   /* Optional Carousel behavior on mobile */
   .carousel {
-    display: flex;
+    display: flex !important;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    gap: 12px;
-    padding: 10px 0 30px;
+    gap: 16px;
+    padding: 10px 0 40px;
     margin: 0 -20px; /* pull outside container padding */
     padding-left: 20px;
     padding-right: 20px;
     scrollbar-width: none; /* hide scrollbar for clean look */
+    align-items: stretch;
   }
 
   .carousel::-webkit-scrollbar {
@@ -99,9 +100,11 @@
   }
 
   .carousel > div {
-    min-width: 220px; /* Adjusted width for better mobile preview of next cards */
+    width: 280px; /* Use width instead of min-width for flex children */
+    min-width: 280px;
     scroll-snap-align: center;
     flex-shrink: 0;
+    display: flex;
   }
 }
 

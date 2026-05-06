@@ -164,9 +164,8 @@ export default function ProductGrid({
 
         {products.length > 0 ? (
           <div className={`
-            ${styles.grid} 
-            ${variant === "grid" ? styles.standardGrid : ""} 
-            ${isCarouselOnMobile ? styles.carousel : ""}
+            ${isCarouselOnMobile ? styles.carousel : styles.grid} 
+            ${variant === "grid" && !isCarouselOnMobile ? styles.standardGrid : ""} 
           `}>
             {products.map((product, index) => (
               <ProductCard key={product.id} product={product} index={index} />
