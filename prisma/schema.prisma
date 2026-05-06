@@ -79,6 +79,8 @@ model Product {
   status        String           @default("draft")
   image         String
   gallery       String           @default("[]")
+  features      String           @default("[]")
+  specs         String           @default("{}")
   category      String           @default("Uncategorized")
   attributes    String           @default("{}")
   placements    String           @default("[]")
