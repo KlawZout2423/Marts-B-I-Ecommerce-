@@ -99,7 +99,7 @@
   }
 
   .carousel > div {
-    min-width: 260px; /* card width on mobile carousel */
+    min-width: 220px; /* Adjusted width for better mobile preview of next cards */
     scroll-snap-align: center;
     flex-shrink: 0;
   }
