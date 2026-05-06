@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { Lock, Mail, ArrowRight, ShieldCheck } from "lucide-react";
 import styles from "../AdminLayout.module.css"; // Reuse some layouts
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
