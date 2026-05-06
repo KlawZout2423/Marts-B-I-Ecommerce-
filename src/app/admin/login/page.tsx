@@ -59,12 +59,15 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label style={{ fontSize: '13px', fontWeight: 600, color: '#475569' }}>Email Address</label>
+            <label htmlFor="email" style={{ fontSize: '13px', fontWeight: 600, color: '#475569' }}>Email Address</label>
             <div style={{ position: 'relative' }}>
               <Mail size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: '#94a3b8' }} />
               <input 
+                id="email"
+                name="email"
                 type="email" 
                 required
+                autoComplete="email"
                 style={{ 
                   width: '100%', padding: '12px 12px 12px 40px', borderRadius: '10px',
                   border: '1px solid #e2e8f0', outline: 'none', transition: '0.2s'
@@ -77,12 +80,15 @@ export default function LoginPage() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label style={{ fontSize: '13px', fontWeight: 600, color: '#475569' }}>Password</label>
+            <label htmlFor="password" style={{ fontSize: '13px', fontWeight: 600, color: '#475569' }}>Password</label>
             <div style={{ position: 'relative' }}>
               <Lock size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: '#94a3b8' }} />
               <input 
+                id="password"
+                name="password"
                 type="password" 
                 required
+                autoComplete="current-password"
                 style={{ 
                   width: '100%', padding: '12px 12px 12px 40px', borderRadius: '10px',
                   border: '1px solid #e2e8f0', outline: 'none', transition: '0.2s'

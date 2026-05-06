@@ -192,8 +192,10 @@ export default function ProductGrid({
             
             <div className={styles.modalBody}>
               <div className={styles.inputGroup}>
-                <label>Product Name</label>
+                <label htmlFor="quick-add-name">Product Name</label>
                 <input 
+                  id="quick-add-name"
+                  name="product-name"
                   type="text" 
                   placeholder="e.g. Summer Dress" 
                   value={newProduct.name}
@@ -201,8 +203,10 @@ export default function ProductGrid({
                 />
               </div>
               <div className={styles.inputGroup}>
-                <label>Price ($)</label>
+                <label htmlFor="quick-add-price">Price ($)</label>
                 <input 
+                  id="quick-add-price"
+                  name="product-price"
                   type="number" 
                   placeholder="0.00" 
                   value={newProduct.price}
@@ -239,8 +243,10 @@ export default function ProductGrid({
               </div>
 
               <div className={styles.inputGroup}>
-                <label>Category</label>
+                <label htmlFor="quick-add-category">Category</label>
                 <select 
+                  id="quick-add-category"
+                  name="product-category"
                   value={newProduct.category}
                   onChange={e => setNewProduct({...newProduct, category: e.target.value})}
                   className={styles.select}

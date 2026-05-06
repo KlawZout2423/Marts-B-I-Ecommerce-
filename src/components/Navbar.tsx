@@ -248,14 +248,20 @@ const Navbar = () => {
         <div className={styles.searchOverlay} onClick={() => setIsSearchOpen(false)}>
           <div className={styles.searchOverlayInner} onClick={(e) => e.stopPropagation()}>
             <form className={styles.searchForm} onSubmit={handleSearch}>
+              <label htmlFor="search-input" className="sr-only" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: 0 }}>
+                Search for products
+              </label>
               <Search size={22} className={styles.searchFormIcon} />
               <input
+                id="search-input"
+                name="q"
                 ref={searchInputRef}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search for products..."
                 className={styles.searchOverlayInput}
+                autoComplete="off"
               />
               {searchQuery && (
                 <button
