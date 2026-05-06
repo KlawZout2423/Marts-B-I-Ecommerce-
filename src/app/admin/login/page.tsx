@@ -27,10 +27,10 @@ export default function LoginPage() {
       } else {
         toast.success("Welcome back, Admin!");
         // Small delay to allow the session cookie to be fully written
-        // before the hard navigation triggers an auth check in admin layout
+        // before the navigation triggers an auth check in admin layout
         setTimeout(() => {
-          window.location.href = "/admin";
-        }, 500);
+          router.replace("/admin");
+        }, 800);
       }
     } catch (err) {
       toast.error("An unexpected error occurred");

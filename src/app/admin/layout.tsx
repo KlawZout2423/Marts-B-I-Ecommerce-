@@ -36,7 +36,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           const freshSession = await authClient.getSession();
           if (!freshSession?.data?.user) {
              console.log("No session found after retry, redirecting to admin login");
-             router.push("/admin/login");
+             router.replace("/admin/login");
           }
         }, 1000);
       }
