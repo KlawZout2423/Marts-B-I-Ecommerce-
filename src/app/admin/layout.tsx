@@ -26,20 +26,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     // Skip auth check if we are on the admin login page itself
     if (pathname === "/admin/login") return;
 
+    // Only run the check once isPending is fully resolved
     if (!isPending) {
-      console.log("Admin Auth Check:", { 
-        hasSession: !!session, 
-        userRole: (session?.user as any)?.role,
-        pathname 
-      });
-
       if (!session?.user) {
-        console.log("No session found, redirecting to login...");
-        // Use a small timeout to allow for any pending cookie processing
-        const timer = setTimeout(() => {
-          router.push("/admin/login");
-        }, 500);
-        return () => clearTimeout(timer);
+        // Redirect to login — no session found
+        router.push("/admin/login");
       }
     }
   }, [session, isPending, router, pathname]);
@@ -49,12 +40,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return <>{children}</>;
   }
 
+  // Show loading while session is being fetched
   if (isPending) {
-    return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", color: "#64748b" }}>Verifying Admin Session...</div>;
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", flexDirection: "column", gap: "16px", color: "#64748b", background: "#f8fafc" }}>
+        <div style={{ width: "40px", height: "40px", border: "3px solid #e2e8f0", borderTop: "3px solid #0ea5e9", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        <span style={{ fontSize: "14px", fontWeight: 500 }}>Verifying session...</span>
+      </div>
+    );
   }
 
+  // If session is still null after loading, return null (useEffect handles redirect)
   if (!session?.user) {
-    return null; // Handled by useEffect
+    return null;
   }
 
   // If logged in but NOT an admin, show a clear error instead of redirecting
