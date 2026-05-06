@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, Heart, ArrowLeft, Check, Star, Shield, Truck, RotateCcw } from "lucide-react";
+import { ShoppingCart, Heart, ArrowLeft, Check, Star, Shield, Truck, RotateCcw, TrendingUp } from "lucide-react";
 import { Product } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import Link from "next/link";
@@ -13,6 +13,7 @@ export default function ProductDetail({ product }: { product: Product }) {
   const { addToCart, setIsOpen } = useCart();
   const [added, setAdded] = useState(false);
   const [qty, setQty] = useState(1);
+  const [activeTab, setActiveTab] = useState<'highlights' | 'specs'>('highlights');
 
   const handleAddToCart = () => {
     for (let i = 0; i < qty; i++) addToCart(product);
@@ -90,33 +91,31 @@ export default function ProductDetail({ product }: { product: Product }) {
               <span className={styles.reviewCount}>{product.rating} ({product.reviewCount} reviews)</span>
             </div>
 
-            <div className={styles.price}>${product.price}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+              <div className={styles.price}>${product.price}</div>
+              <div className={styles.stockBadge}>
+                <div className={styles.pulseDot} />
+                In Stock
+              </div>
+            </div>
 
             <p className={styles.description}>{product.description}</p>
-
-            {/* Features */}
-            <div className={styles.features}>
-              <h4 className={styles.sectionTitle}>Highlights</h4>
-              <div className={styles.featureGrid}>
-                {Array.isArray(product.features) && product.features.length > 0 ? (
-                  product.features.map((f, i) => (
-                    <div key={i} className={styles.featureItem}>
-                      <Check size={18} className={styles.check} />
-                      <span>{f}</span>
-                    </div>
-                  ))
-                ) : (
-                  <p style={{ color: '#94a3b8', fontSize: '14px' }}>No highlights listed.</p>
-                )}
-              </div>
+            
+            {/* Social Proof */}
+            <div className={styles.socialProof}>
+              <TrendingUp size={16} />
+              <span>42 people added this to their wishlist today</span>
             </div>
 
             <div className={styles.buyBox}>
               {/* Quantity */}
               <div className={styles.qtyRow}>
-                <button onClick={() => setQty(Math.max(1, qty - 1))} className={styles.qtyBtn}>−</button>
-                <span className={styles.qty}>{qty}</span>
-                <button onClick={() => setQty(qty + 1)} className={styles.qtyBtn}>+</button>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#475569' }}>Quantity:</span>
+                <div className={styles.qtyControls}>
+                  <button onClick={() => setQty(Math.max(1, qty - 1))} className={styles.qtyBtn}>−</button>
+                  <span className={styles.qty}>{qty}</span>
+                  <button onClick={() => setQty(qty + 1)} className={styles.qtyBtn}>+</button>
+                </div>
               </div>
 
               {/* Actions */}
@@ -134,19 +133,59 @@ export default function ProductDetail({ product }: { product: Product }) {
               </div>
             </div>
 
-            {/* Specs */}
-            <div className={styles.specs}>
-              <h4 className={styles.sectionTitle}>Specifications</h4>
-              <div className={styles.specsList}>
-                {product.specs && typeof product.specs === 'object' && Object.keys(product.specs).length > 0 ? (
-                  Object.entries(product.specs).map(([key, val]) => (
-                    <div key={key} className={styles.specRow}>
-                      <span className={styles.specKey}>{key}</span>
-                      <span className={styles.specVal}>{val}</span>
-                    </div>
-                  ))
+            {/* Tabbed Content */}
+            <div className={styles.tabSection}>
+              <div className={styles.tabHeader}>
+                <button 
+                  className={`${styles.tabBtn} ${activeTab === 'highlights' ? styles.activeTab : ''}`}
+                  onClick={() => setActiveTab('highlights')}
+                >
+                  Highlights
+                </button>
+                <button 
+                  className={`${styles.tabBtn} ${activeTab === 'specs' ? styles.activeTab : ''}`}
+                  onClick={() => setActiveTab('specs')}
+                >
+                  Specifications
+                </button>
+              </div>
+
+              <div className={styles.tabContent}>
+                {activeTab === 'highlights' ? (
+                  <div className={styles.featureGrid}>
+                    {Array.isArray(product.features) && product.features.length > 0 ? (
+                      product.features.map((f, i) => (
+                        <div key={i} className={styles.featureItem}>
+                          <Check size={18} className={styles.check} />
+                          <span>{f}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <p style={{ color: '#94a3b8', fontSize: '14px' }}>Every {product.name} is crafted for excellence and durability.</p>
+                    )}
+                  </div>
                 ) : (
-                  <p style={{ color: '#94a3b8', fontSize: '14px' }}>Specifications not provided.</p>
+                  <div className={styles.specsList}>
+                    {product.specs && typeof product.specs === 'object' && Object.keys(product.specs).length > 0 ? (
+                      Object.entries(product.specs).map(([key, val]) => (
+                        <div key={key} className={styles.specRow}>
+                          <span className={styles.specKey}>{key}</span>
+                          <span className={styles.specVal}>{val}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className={styles.specsList}>
+                        <div className={styles.specRow}>
+                          <span className={styles.specKey}>Category</span>
+                          <span className={styles.specVal}>{product.category}</span>
+                        </div>
+                        <div className={styles.specRow}>
+                          <span className={styles.specKey}>Product ID</span>
+                          <span className={styles.specVal}>#MB-{product.id}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
