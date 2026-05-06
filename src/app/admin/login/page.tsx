@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Lock, Mail, ArrowRight, ShieldCheck } from "lucide-react";
 import styles from "../AdminLayout.module.css"; // Reuse some layouts
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 
