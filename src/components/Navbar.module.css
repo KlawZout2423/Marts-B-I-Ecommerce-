@@ -40,14 +40,18 @@
 .logo {
   font-size: 1.65rem;
   font-weight: 800;
-  color: #0f172a;
+  color: #0f172a !important;
   text-decoration: none;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.04em;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 10;
 }
 
 .logo span {
-  color: #2563eb;
+  color: #2563eb !important;
 }
 
 /* ── Desktop Nav Links ───── */

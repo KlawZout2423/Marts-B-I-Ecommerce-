@@ -74,7 +74,7 @@
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 768px) {
   .grid,
   .standardGrid {
     grid-template-columns: 1fr 1fr;
@@ -86,12 +86,12 @@
     display: flex !important;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    gap: 16px;
+    gap: 12px;
     padding: 10px 0 40px;
-    margin: 0 -20px; /* pull outside container padding */
-    padding-left: 20px;
-    padding-right: 20px;
-    scrollbar-width: none; /* hide scrollbar for clean look */
+    margin: 0 -15px; 
+    padding-left: 15px;
+    padding-right: 15px;
+    scrollbar-width: none; 
     align-items: stretch;
   }
 
@@ -100,9 +100,9 @@
   }
 
   .carousel > div {
-    width: 280px; /* Use width instead of min-width for flex children */
-    min-width: 280px;
-    scroll-snap-align: center;
+    width: 160px; 
+    min-width: 160px;
+    scroll-snap-align: start;
     flex-shrink: 0;
     display: flex;
   }
