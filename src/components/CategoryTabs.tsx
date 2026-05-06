@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Headphones, Watch, Smartphone, Laptop, Camera, Briefcase } from "lucide-react";
+import Link from "next/link";
 import { useEditMode } from "@/context/EditModeContext";
 import styles from "./CategoryTabs.module.css";
 
@@ -44,27 +45,32 @@ export default function CategoryTabs({ id, content }: { id?: string, content?: a
       >
         <div className={styles.tabsWrapper}>
           {displayCategories.map((cat, i) => (
-            <motion.button
-              key={i}
-              className={styles.tab}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.05, type: "spring", stiffness: 400, damping: 10 }}
-              whileHover={{ scale: 1.05, y: -5 }}
+            <Link 
+              key={i} 
+              href={`/shop?filter=${cat.name}`}
+              className={styles.tabLink}
             >
-              <div className={styles.iconBox}>
-                <cat.icon size={24} strokeWidth={1.5} />
-              </div>
-              <span 
-                className={`${styles.name} ${isEditMode ? styles.editable : ""}`}
-                contentEditable={isEditMode}
-                suppressContentEditableWarning
-                onBlur={(e) => id && updateBlockContent(id, { [`name${i}`]: e.currentTarget.textContent })}
+              <motion.button
+                className={styles.tab}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05, type: "spring", stiffness: 400, damping: 15 }}
+                whileHover={{ y: -5 }}
               >
-                {cat.name}
-              </span>
-            </motion.button>
+                <div className={styles.iconBox}>
+                  <cat.icon size={26} strokeWidth={1.5} />
+                </div>
+                <span 
+                  className={`${styles.name} ${isEditMode ? styles.editable : ""}`}
+                  contentEditable={isEditMode}
+                  suppressContentEditableWarning
+                  onBlur={(e) => id && updateBlockContent(id, { [`name${i}`]: e.currentTarget.textContent })}
+                >
+                  {cat.name}
+                </span>
+              </motion.button>
+            </Link>
           ))}
         </div>
       </div>
