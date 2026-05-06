@@ -4,9 +4,11 @@ export const DEFAULT_HOME_BLOCKS = [
     type: "hero", 
     title: "Hero Section",
     content: {
-      headline: "The Sound of Experience",
-      subtext: "Premium audio imports delivered to your doorstep.",
-      backgroundImage: "https://images.unsplash.com/photo-1558403194-611308249627?auto=format&fit=crop&q=80&w=2000"
+      pillText: "Introducing the 2026 Collection",
+      titlePrefix: "Beyond Premium \n Welcome to",
+      titleHighlight: "MARTS",
+      subtitle: "Discover items that transcend the ordinary. Clean, modern, and built for professionals who demand the best.",
+      mainImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"
     }
   },
   { 

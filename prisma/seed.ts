@@ -127,6 +127,45 @@ async function main() {
     });
   }
 
+  console.log("Seeding page content...");
+
+  const homeBlocks = [
+    { 
+      id: "hero-default", 
+      type: "hero", 
+      title: "Hero Section",
+      content: {
+        pillText: "Introducing the 2026 Collection",
+        titlePrefix: "Beyond Premium \n Welcome to",
+        titleHighlight: "MARTS",
+        subtitle: "Discover items that transcend the ordinary. Clean, modern, and built for professionals who demand the best.",
+        mainImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"
+      }
+    },
+    { id: "category-tabs-default", type: "categoryHighlights", title: "Category Tabs" },
+    { id: "promos-default", type: "promos", title: "Promo Banners", content: { title1: "Summer Collection", subtitle1: "Up to 50% Off", title2: "New Arrivals", subtitle2: "Shop the latest tech" } },
+    { id: "bestsellers-default", type: "bestsellers", title: "Best Sellers" },
+    { id: "new-arrivals-default", type: "newArrivals", title: "New Arrivals" },
+    { id: "trust-bar-default", type: "trustBadges", title: "Trust Bar" }
+  ];
+
+  await prisma.pageContent.upsert({
+    where: { route: "/" },
+    update: { blocks: JSON.stringify(homeBlocks) },
+    create: { route: "/", blocks: JSON.stringify(homeBlocks) },
+  });
+
+  await prisma.pageContent.upsert({
+    where: { route: "/about" },
+    update: {},
+    create: { 
+      route: "/about", 
+      blocks: JSON.stringify([
+        { id: "about-hero", type: "hero", title: "About Hero", content: { headline: "About MARTS B&I", subtext: "Delivering quality products through trusted global sourcing.", titleHighlight: "Our Story" } }
+      ]) 
+    },
+  });
+
   console.log("Seed complete!");
 }
 
