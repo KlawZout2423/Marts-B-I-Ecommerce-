@@ -30,12 +30,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       console.log("Admin Auth Check:", { 
         hasSession: !!session, 
         userRole: (session?.user as any)?.role,
-        fullSession: session 
+        pathname 
       });
 
       if (!session?.user) {
         console.log("No session found, redirecting to login...");
-        router.push("/admin/login");
+        // Use a small timeout to allow for any pending cookie processing
+        const timer = setTimeout(() => {
+          router.push("/admin/login");
+        }, 500);
+        return () => clearTimeout(timer);
       }
     }
   }, [session, isPending, router, pathname]);
