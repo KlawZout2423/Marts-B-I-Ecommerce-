@@ -71,18 +71,20 @@
   .grid,
   .standardGrid,
   .carousel {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid,
+  .standardGrid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
   }
 }
 
 @media (max-width: 768px) {
-  .grid,
-  .standardGrid {
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
   /* Carousel behavior ONLY on mobile */
   .carousel {
     display: flex !important;

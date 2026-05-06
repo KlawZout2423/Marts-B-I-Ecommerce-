@@ -180,11 +180,11 @@
     overflow-x: auto;
     gap: 10px;
     padding: 0.5rem 0 1rem;
-    margin: 0 -1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    margin: 0 -1.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
     scrollbar-width: none;
-    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
   }
 
   .mobileCategoryScroll::-webkit-scrollbar {
@@ -203,7 +203,7 @@
     font-weight: 700;
     font-size: 0.85rem;
     white-space: nowrap;
-    scroll-snap-align: start;
+    flex-shrink: 0; /* CRITICAL: Prevent shrinking so it scrolls */
     transition: all 0.2s ease;
   }
 
