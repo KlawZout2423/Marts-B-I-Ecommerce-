@@ -27,7 +27,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (pathname === "/admin/login") return;
 
     if (!isPending) {
-      if (!session?.user || (session.user as any).role !== "admin") {
+      console.log("Admin Auth Check:", { 
+        hasSession: !!session, 
+        userRole: (session?.user as any)?.role,
+        fullSession: session 
+      });
+
+      if (!session?.user) {
+        console.log("No session found, redirecting to login...");
         router.push("/admin/login");
       }
     }
@@ -39,11 +46,41 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   if (isPending) {
-    return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>Loading...</div>;
+    return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", color: "#64748b" }}>Verifying Admin Session...</div>;
   }
 
-  if (!session?.user || (session.user as any).role !== "admin") {
-    return null; // Let useEffect handle the redirect
+  if (!session?.user) {
+    return null; // Handled by useEffect
+  }
+
+  // If logged in but NOT an admin, show a clear error instead of redirecting
+  if ((session.user as any).role !== "admin") {
+    return (
+      <div style={{ 
+        height: "100vh", display: "flex", flexDirection: "column", 
+        alignItems: "center", justifyContent: "center", gap: "20px",
+        padding: "20px", textAlign: "center", background: "#f8fafc"
+      }}>
+        <div style={{ padding: "20px", background: "#fee2e2", borderRadius: "50%", color: "#ef4444" }}>
+          <LogOut size={40} />
+        </div>
+        <h1 style={{ fontSize: "24px", fontWeight: 800, color: "#1e293b" }}>Access Denied</h1>
+        <p style={{ color: "#64748b", maxWidth: "400px" }}>
+          You are logged in as <strong>{session.user.email}</strong>, but you do not have administrative privileges.
+        </p>
+        <div style={{ display: "flex", gap: "12px" }}>
+          <button 
+            onClick={() => authClient.signOut().then(() => router.push("/admin/login"))}
+            style={{ padding: "10px 20px", background: "#0f172a", color: "white", borderRadius: "8px", fontWeight: 600, border: "none", cursor: "pointer" }}
+          >
+            Sign Out
+          </button>
+          <Link href="/" style={{ padding: "10px 20px", border: "1px solid #e2e8f0", borderRadius: "8px", color: "#64748b", textDecoration: "none" }}>
+            Back to Store
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   const navItems = [
