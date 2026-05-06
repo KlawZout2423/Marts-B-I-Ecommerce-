@@ -161,6 +161,10 @@
   color: #64748b;
 }
 
+.mobileCategoryScroll {
+  display: none;
+}
+
 @media (max-width: 1024px) {
   .mainLayout {
     grid-template-columns: 1fr;
@@ -217,8 +221,4 @@
   .searchWrapper {
     max-width: 100%;
   }
-}
-
-.mobileCategoryScroll {
-  display: none;
 }
