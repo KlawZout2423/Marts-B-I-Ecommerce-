@@ -35,7 +35,7 @@ export default function ShopClient() {
   const [sortBy, setSortBy] = useState("newest");
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [priceRange, setPriceRange] = useState([0, 5000]);
 
   // Sync searchQuery with URL param when it changes
   useEffect(() => {
@@ -142,7 +142,13 @@ export default function ShopClient() {
                       <button
                         key={cat.name}
                         className={`${styles.filterItem} ${activeCategory === cat.name ? styles.activeFilter : ""}`}
-                        onClick={() => setActiveCategory(cat.name)}
+                        onClick={() => {
+                          setActiveCategory(cat.name);
+                          if (cat.name === "All") {
+                            setSearchQuery("");
+                            setPriceRange([0, 5000]);
+                          }
+                        }}
                       >
                         <Icon size={18} /> {cat.name}
                       </button>
@@ -179,8 +185,8 @@ export default function ShopClient() {
                   <input 
                     type="range" 
                     min="0" 
-                    max="1000" 
-                    step="10"
+                    max="5000" 
+                    step="50"
                     value={priceRange[1]}
                     onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
                     style={{ width: '100%', cursor: 'pointer' }}
