@@ -174,11 +174,13 @@ export default function Hero({ id, content: passedContent }: { id?: string, cont
                 className={styles.mainImageWrapper}
                 style={{ y: y1 }}
               >
-                <img 
-                  src={content.mainImage} 
-                  alt="Featured Product" 
-                  className={styles.mainImage}
-                />
+                <div className={styles.mainImageInner}>
+                  <img 
+                    src={content.mainImage} 
+                    alt="Featured Product" 
+                    className={styles.mainImage}
+                  />
+                </div>
                 <motion.div 
                   className={styles.floatingBadge}
                   style={{ y: y2 }}
