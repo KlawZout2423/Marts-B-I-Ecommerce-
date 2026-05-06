@@ -110,7 +110,7 @@ const Navbar = () => {
 
             {/* Logo */}
             <Link href="/" className={styles.logo}>
-              MARTS<span>.</span>
+              <img src="/logo.png" alt="MARTS Logo" className={styles.logoImage} />
             </Link>
 
             {/* Desktop Nav Links */}

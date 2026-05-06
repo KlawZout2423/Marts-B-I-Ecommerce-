@@ -79,9 +79,6 @@ export default function ProductCard({ product, index = 0, className }: ProductCa
 
       {/* Info */}
       <div className={styles.details}>
-        {product.category && (
-          <span className={styles.category}>{product.category}</span>
-        )}
         <h3 className={styles.name}>{product.name}</h3>
 
         <div className={styles.priceRow}>
@@ -91,17 +88,22 @@ export default function ProductCard({ product, index = 0, className }: ProductCa
               <span className={styles.oldPrice}>${product.originalPrice}</span>
             )}
           </div>
+          
+          <button 
+            className={styles.mobileAddBtn}
+            onClick={handleQuickAdd}
+            aria-label="Add to cart"
+          >
+            <ShoppingBag size={14} />
+          </button>
+        </div>
 
+        <div className={styles.statsRow}>
           <div className={styles.rating}>
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                size={11}
-                fill={i < Math.floor(product.rating || 0) ? "#f59e0b" : "none"}
-                color={i < Math.floor(product.rating || 0) ? "#f59e0b" : "#d1d5db"}
-              />
-            ))}
+            <Star size={10} fill="#f59e0b" color="#f59e0b" />
+            <span>{product.rating}</span>
           </div>
+          <span className={styles.soldCount}>100+ sold</span>
         </div>
       </div>
     </motion.div>
