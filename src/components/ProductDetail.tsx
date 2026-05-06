@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, Heart, ArrowLeft, Check, Star, Shield, Truck, RotateCcw, TrendingUp } from "lucide-react";
+import { ShoppingCart, Heart, ArrowLeft, Check, Star, Shield, Truck, RotateCcw, TrendingUp, ChevronRight } from "lucide-react";
 import { Product } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import Link from "next/link";
@@ -32,7 +32,7 @@ export default function ProductDetail({ product }: { product: Product }) {
 
         <div className={styles.grid}>
 
-          {/* Image */}
+          {/* Image Section */}
           <motion.div 
             className={styles.imageSection}
             initial={{ opacity: 0, x: -20 }}
@@ -50,67 +50,105 @@ export default function ProductDetail({ product }: { product: Product }) {
               />
             </div>
             
-            {/* Trust Badges below image */}
+            {/* Thumbnails */}
+            <div className={styles.thumbnailRow}>
+              {[product.image, product.image, product.image, product.image].map((img, i) => (
+                <div key={i} className={`${styles.thumb} ${i === 0 ? styles.activeThumb : ''}`}>
+                  <Image src={img} alt="thumbnail" width={80} height={80} />
+                </div>
+              ))}
+            </div>
+
+            {/* Trust Badges */}
             <div className={styles.trustGrid}>
               <div className={styles.trustItem}>
-                <Shield size={20} className={styles.trustIcon} />
-                <span>2 Year Warranty</span>
+                <Shield size={18} />
+                <span>Original</span>
               </div>
               <div className={styles.trustItem}>
-                <Truck size={20} className={styles.trustIcon} />
-                <span>Express Shipping</span>
+                <Truck size={18} />
+                <span>Ready Stock</span>
               </div>
               <div className={styles.trustItem}>
-                <RotateCcw size={20} className={styles.trustIcon} />
-                <span>30-Day Returns</span>
+                <RotateCcw size={18} />
+                <span>7 Day Warranty</span>
               </div>
             </div>
           </motion.div>
 
-          {/* Info */}
+          {/* Info Section */}
           <motion.div 
             className={styles.infoSection}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <span className={styles.category}>{product.category}</span>
+            <div className={styles.headerRow}>
+              <span className={styles.officialBadge}>
+                <Shield size={12} fill="white" /> Official Store
+              </span>
+            </div>
+            
             <h1 className={styles.name}>{product.name}</h1>
             
             <div className={styles.ratingRow}>
-              <div className={styles.stars}>
-                {[...Array(5)].map((_, i) => (
-                  <Star 
-                    key={i} 
-                    size={16} 
-                    fill={i < Math.floor(product.rating || 0) ? "var(--accent)" : "none"}
-                    color={i < Math.floor(product.rating || 0) ? "var(--accent)" : "var(--border)"}
-                  />
+              <div className={styles.ratingBox}>
+                <Star size={14} fill="#fbbf24" color="#fbbf24" />
+                <span className={styles.ratingVal}>{product.rating}</span>
+                <span className={styles.ratingCount}>({product.reviewCount} reviews)</span>
+              </div>
+              <span className={styles.dot}>•</span>
+              <span className={styles.discussion}>0 Discussion</span>
+            </div>
+
+            <div className={styles.priceContainer}>
+              {product.originalPrice && (
+                <span className={styles.oldPrice}>${product.originalPrice}</span>
+              )}
+              <div className={styles.mainPrice}>${product.price}</div>
+              {product.originalPrice && (
+                <span className={styles.discountBadge}>
+                  {Math.round((1 - Number(product.price)/Number(product.originalPrice)) * 100)}% OFF
+                </span>
+              )}
+            </div>
+
+            {/* Variants */}
+            <div className={styles.variantSection}>
+              <h4 className={styles.variantTitle}>Color</h4>
+              <div className={styles.variantGrid}>
+                {['Olive', 'Salem', 'Yellow'].map(color => (
+                  <button key={color} className={`${styles.variantBtn} ${color === 'Yellow' ? styles.activeVariant : ''}`}>
+                    <div className={styles.colorCircle} style={{ background: color.toLowerCase() }} />
+                    {color}
+                  </button>
                 ))}
               </div>
-              <span className={styles.reviewCount}>{product.rating} ({product.reviewCount} reviews)</span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-              <div className={styles.price}>${product.price}</div>
-              <div className={styles.stockBadge}>
-                <div className={styles.pulseDot} />
-                In Stock
+            <div className={styles.variantSection}>
+              <h4 className={styles.variantTitle}>Size</h4>
+              <div className={styles.variantGrid}>
+                {['S', 'M', 'L', 'XL'].map(size => (
+                  <button key={size} className={`${styles.variantBtn} ${size === 'M' ? styles.activeVariant : ''}`}>
+                    {size}
+                  </button>
+                ))}
               </div>
             </div>
 
-            <p className={styles.description}>{product.description}</p>
-            
-            {/* Social Proof */}
-            <div className={styles.socialProof}>
-              <TrendingUp size={16} />
-              <span>42 people added this to their wishlist today</span>
+            {/* Promo Box */}
+            <div className={styles.promoCard}>
+              <div className={styles.promoText}>
+                <p className={styles.promoHeading}>Extra Discount Today</p>
+                <p className={styles.promoSub}>Use code: MARTS2024</p>
+              </div>
+              <ChevronRight size={20} color="#16a34a" />
             </div>
 
             <div className={styles.buyBox}>
-              {/* Quantity */}
               <div className={styles.qtyRow}>
-                <span style={{ fontSize: '14px', fontWeight: 700, color: '#475569' }}>Quantity:</span>
+                <span className={styles.qtyLabel}>Quantity:</span>
                 <div className={styles.qtyControls}>
                   <button onClick={() => setQty(Math.max(1, qty - 1))} className={styles.qtyBtn}>−</button>
                   <span className={styles.qty}>{qty}</span>
@@ -118,75 +156,48 @@ export default function ProductDetail({ product }: { product: Product }) {
                 </div>
               </div>
 
-              {/* Actions */}
               <div className={styles.actions}>
                 <button
                   className={`${styles.addBtn} ${added ? styles.added : ""}`}
                   onClick={handleAddToCart}
                 >
                   <ShoppingCart size={20} />
-                  {added ? "Added to Cart!" : "Add to Cart"}
+                  {added ? "Added!" : "Add to Cart"}
                 </button>
-                <button className={styles.wishBtn} aria-label="Add to favorites">
+                <button className={styles.wishBtn}>
                   <Heart size={20} />
                 </button>
               </div>
             </div>
 
-            {/* Tabbed Content */}
-            <div className={styles.tabSection}>
-              <div className={styles.tabHeader}>
-                <button 
-                  className={`${styles.tabBtn} ${activeTab === 'highlights' ? styles.activeTab : ''}`}
-                  onClick={() => setActiveTab('highlights')}
-                >
-                  Highlights
-                </button>
-                <button 
-                  className={`${styles.tabBtn} ${activeTab === 'specs' ? styles.activeTab : ''}`}
-                  onClick={() => setActiveTab('specs')}
-                >
-                  Specifications
-                </button>
+            {/* Details Table */}
+            <div className={styles.detailsSection}>
+              <div className={styles.detailsHeader}>
+                <button className={styles.detailTabActive}>Details</button>
+                <button className={styles.detailTab}>Reviews</button>
+                <button className={styles.detailTab}>Shipping</button>
               </div>
 
-              <div className={styles.tabContent}>
-                {activeTab === 'highlights' ? (
-                  <div className={styles.featureGrid}>
-                    {Array.isArray(product.features) && product.features.length > 0 ? (
-                      product.features.map((f, i) => (
-                        <div key={i} className={styles.featureItem}>
-                          <Check size={18} className={styles.check} />
-                          <span>{f}</span>
-                        </div>
-                      ))
-                    ) : (
-                      <p style={{ color: '#94a3b8', fontSize: '14px' }}>Every {product.name} is crafted for excellence and durability.</p>
-                    )}
+              <div className={styles.detailsContent}>
+                <div className={styles.infoGrid}>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoKey}>Weight</span>
+                    <span className={styles.infoVal}>350 gram</span>
                   </div>
-                ) : (
-                  <div className={styles.specsList}>
-                    {product.specs && typeof product.specs === 'object' && Object.keys(product.specs).length > 0 ? (
-                      Object.entries(product.specs).map(([key, val]) => (
-                        <div key={key} className={styles.specRow}>
-                          <span className={styles.specKey}>{key}</span>
-                          <span className={styles.specVal}>{val}</span>
-                        </div>
-                      ))
-                    ) : (
-                      <div className={styles.specsList}>
-                        <div className={styles.specRow}>
-                          <span className={styles.specKey}>Category</span>
-                          <span className={styles.specVal}>{product.category}</span>
-                        </div>
-                        <div className={styles.specRow}>
-                          <span className={styles.specKey}>Product ID</span>
-                          <span className={styles.specVal}>#MB-{product.id}</span>
-                        </div>
-                      </div>
-                    )}
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoKey}>Condition</span>
+                    <span className={styles.infoVal}>New</span>
                   </div>
-                )}
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoKey}>Category</span>
+                    <span className={styles.infoVal}>{product.category}</span>
+                  </div>
+                </div>
+
+                <div className={styles.descriptionText}>
+                  <h4 className={styles.descTitle}>Description</h4>
+                  <p>{product.description}</p>
+                </div>
               </div>
             </div>
           </motion.div>
