@@ -16,6 +16,7 @@ interface ProductGridProps {
   isLoading?: boolean;
   emptyMessage?: string;
   variant?: "masonry" | "grid";
+  isCarouselOnMobile?: boolean;
 }
 
 export default function ProductGrid({
@@ -25,7 +26,8 @@ export default function ProductGrid({
   products: initialProducts,
   isLoading: initialLoading,
   emptyMessage = "No products found.",
-  variant = "masonry"
+  variant = "masonry",
+  isCarouselOnMobile = false
 }: ProductGridProps) {
   const { isEditMode } = useEditMode();
   const { addProduct } = useInventory();
@@ -157,7 +159,11 @@ export default function ProductGrid({
         )}
 
         {products.length > 0 ? (
-          <div className={`${styles.grid} ${variant === "grid" ? styles.standardGrid : ""}`}>
+          <div className={`
+            ${styles.grid} 
+            ${variant === "grid" ? styles.standardGrid : ""} 
+            ${isCarouselOnMobile ? styles.carousel : ""}
+          `}>
             {products.map((product, index) => (
               <ProductCard key={product.id} product={product} index={index} />
             ))}
