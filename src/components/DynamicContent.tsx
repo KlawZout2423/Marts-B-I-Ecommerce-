@@ -61,22 +61,22 @@ export default function DynamicContent({ blocks: initialBlocks }: DynamicContent
             break;
           case "promos":
             const promoBannersOverride = block.content ? [
-              { ...promoBanners[0], title: block.content.title1 || promoBanners[0].title, subtitle: block.content.subtitle1 || promoBanners[0].subtitle },
-              { ...promoBanners[1], title: block.content.title2 || promoBanners[1].title, subtitle: block.content.subtitle2 || promoBanners[1].subtitle }
+              { ...promoBanners[0], title: block.content.title1 || promoBanners[0].title, subtitle: block.content.subtitle1 || promoBanners[0].subtitle, imageUrl: block.content.image1 || promoBanners[0].imageUrl },
+              { ...promoBanners[1], title: block.content.title2 || promoBanners[1].title, subtitle: block.content.subtitle2 || promoBanners[1].subtitle, imageUrl: block.content.image2 || promoBanners[1].imageUrl }
             ] : promoBanners;
             content = <PromoBannerCards key={`content-${block.id}`} id={block.id} banners={promoBannersOverride} />;
             break;
           case "bestsellers":
-            content = <ProductGrid key={`content-${block.id}`} title="Best Sellers" filterTag="bestseller" limit={4} isCarouselOnMobile={true} products={allProducts} isLoading={productsLoading} />;
+            content = <ProductGrid key={`content-${block.id}`} title="Best Sellers" filterTag="bestseller" limit={8} isCarouselOnMobile={true} rows={2} products={allProducts} isLoading={productsLoading} />;
             break;
           case "featuredProducts":
-            content = <ProductGrid key={`content-${block.id}`} title="Featured Products" filterTag="featured" limit={4} isCarouselOnMobile={true} products={allProducts} isLoading={productsLoading} />;
+            content = <ProductGrid key={`content-${block.id}`} title="Featured Products" filterTag="featured" limit={8} isCarouselOnMobile={true} rows={2} products={allProducts} isLoading={productsLoading} />;
             break;
           case "newArrivals":
-            content = <ProductGrid key={`content-${block.id}`} title="New Arrivals" filterTag="new" limit={4} isCarouselOnMobile={true} products={allProducts} isLoading={productsLoading} />;
+            content = <ProductGrid key={`content-${block.id}`} title="New Arrivals" filterTag="new" limit={8} isCarouselOnMobile={true} rows={2} products={allProducts} isLoading={productsLoading} />;
             break;
           case "hotSale":
-            content = <ProductGrid key={`content-${block.id}`} title="Hot Sale 🔥" filterTag="hot_sale" limit={4} isCarouselOnMobile={true} products={allProducts} isLoading={productsLoading} />;
+            content = <ProductGrid key={`content-${block.id}`} title="Hot Sale 🔥" filterTag="hot_sale" limit={8} isCarouselOnMobile={true} rows={2} products={allProducts} isLoading={productsLoading} />;
             break;
           case "categoryHighlights":
           case "categories":

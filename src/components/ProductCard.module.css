@@ -56,6 +56,65 @@
   color: #ef4444;
 }
 
+/* Edit Mode Actions */
+.editActions {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  gap: 4px;
+  z-index: 5;
+}
+
+.editBtn {
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0047AB;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  transition: all 0.2s;
+}
+
+.editBtn:hover {
+  background: #0047AB;
+  color: white;
+  transform: scale(1.1);
+}
+
+.deleteCardBtn {
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  transition: all 0.2s;
+}
+
+.deleteCardBtn:hover {
+  background: #ef4444;
+  color: white;
+  transform: scale(1.1);
+}
+
+.editModeActive {
+  outline: 2px dashed #0047AB;
+  outline-offset: 2px;
+}
+
 .cartBar {
   position: absolute;
   bottom: 0;
@@ -113,7 +172,7 @@
 .currentPrice {
   font-size: 18px;
   font-weight: 800;
-  color: #fa591d; /* Temu orange style */
+  color: #0047AB; /* Brand blue instead of Temu orange */
 }
 
 .oldPrice {
@@ -163,12 +222,39 @@
 }
 
 .soldBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 10px;
-  color: #64748b;
-  background: #f1f5f9;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-weight: 600;
+  color: #0047AB; /* Brand blue */
+  background: rgba(0, 71, 171, 0.08);
+  padding: 3px 8px;
+  border-radius: 100px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pulse {
+  width: 6px;
+  height: 6px;
+  background: #0047AB;
+  border-radius: 50%;
+  position: relative;
+}
+
+.pulse::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: inherit;
+  border-radius: inherit;
+  opacity: 0.4;
+  animation: pulseAnim 2s infinite;
+}
+
+@keyframes pulseAnim {
+  0% { transform: scale(1); opacity: 0.4; }
+  100% { transform: scale(2.5); opacity: 0; }
 }
 
 @media (max-width: 768px) {

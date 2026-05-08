@@ -1,8 +1,10 @@
 export interface Product {
   id: string;
   name: string;
-  price: number;
-  originalPrice?: number;
+  slug: string;
+  sku: string;
+  price: number | string;
+  originalPrice?: number | string;
   description: string;
   category: string;
   image: string;
@@ -13,12 +15,16 @@ export interface Product {
   badge?: "Best Seller" | "New" | "Sale";
   stock?: number;
   placements?: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export const products: Product[] = [
   {
     id: "1",
     name: "Cute Soft Teddybear",
+    slug: "cute-soft-teddybear",
+    sku: "TEDDY-001",
     price: 285,
     originalPrice: 345,
     category: "Toys",
@@ -27,11 +33,15 @@ export const products: Product[] = [
     features: ["Eco-friendly materials", "Extra soft", "Hand-stitched"],
     specs: { "Material": "Plush", "Size": "Large" },
     rating: 4.0,
-    reviewCount: 45
+    reviewCount: 45,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
   {
     id: "2",
     name: "MacBook Air Pro",
+    slug: "macbook-air-pro",
+    sku: "MAC-001",
     price: 650,
     originalPrice: 900,
     category: "Electronics",
@@ -40,11 +50,15 @@ export const products: Product[] = [
     features: ["M2 Chip", "Liquid Retina Display", "18-hour battery"],
     specs: { "RAM": "16GB", "Storage": "512GB" },
     rating: 5.0,
-    reviewCount: 120
+    reviewCount: 120,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
   {
     id: "3",
     name: "Gaming Console",
+    slug: "gaming-console",
+    sku: "GAME-001",
     price: 25,
     originalPrice: 31,
     category: "Electronics",
@@ -53,11 +67,15 @@ export const products: Product[] = [
     features: ["4K Output", "Wireless Controller", "Haptic Feedback"],
     specs: { "Storage": "1TB", "Resolution": "4K" },
     rating: 4.5,
-    reviewCount: 88
+    reviewCount: 88,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
   {
     id: "4",
     name: "Premium Headphones",
+    slug: "premium-headphones",
+    sku: "HEAD-001",
     price: 199,
     originalPrice: 249,
     category: "Fashion",
@@ -67,6 +85,8 @@ export const products: Product[] = [
     specs: { "Driver": "40mm", "Battery": "30h" },
     rating: 4.8,
     reviewCount: 250,
-    badge: "Best Seller"
+    badge: "Best Seller",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   }
 ];

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { 
   LayoutDashboard, 
@@ -13,7 +13,11 @@ import {
   LogOut, 
   ChevronRight,
   TrendingUp,
-  Image
+  Image,
+  Menu,
+  X,
+  Users,
+  Inbox
 } from "lucide-react";
 import styles from "./AdminLayout.module.css";
 
@@ -21,6 +25,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Close mobile menu on path change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     // Skip auth check if we are on the admin login page itself
@@ -54,7 +64,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (isPending) {
     return (
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", flexDirection: "column", gap: "16px", color: "#64748b", background: "#f8fafc" }}>
-        <div style={{ width: "40px", height: "40px", border: "3px solid #e2e8f0", borderTop: "3px solid #0ea5e9", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+        <div style={{ width: "40px", height: "40px", border: "3px solid #e2e8f0", borderTop: "3px solid #0047AB", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         <span style={{ fontSize: "14px", fontWeight: 500 }}>Verifying session...</span>
       </div>
@@ -98,17 +108,33 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { name: "Dashboard", href: "/admin", icon: <LayoutDashboard size={20} /> },
-    { name: "Inventory", href: "/admin/products", icon: <Package size={20} /> },
+    { name: "Content", href: "/admin/content", icon: <FileText size={20} /> },
+    { name: "Products", href: "/admin/products", icon: <Package size={20} /> },
     { name: "Orders", href: "/admin/orders", icon: <ShoppingCart size={20} /> },
-    { name: "Content CMS", href: "/admin/content", icon: <FileText size={20} /> },
-    { name: "Analytics", href: "/admin/analytics", icon: <TrendingUp size={20} /> },
+    { name: "Users", href: "/admin/users", icon: <Users size={20} /> },
+    { name: "Inbox", href: "/admin/inbox", icon: <Inbox size={20} /> },
     { name: "Settings", href: "/admin/settings", icon: <Settings size={20} /> },
   ];
 
   return (
     <div className={styles.layout}>
-      {/* ⬅️ Sidebar */}
-      <aside className={styles.sidebar}>
+      {/* 📱 Mobile Header */}
+      <header className={styles.mobileHeader}>
+        <button 
+          className={styles.hamburger} 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label="Menu"
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+        <div className={styles.logoText}>MARTS <span>Admin</span></div>
+      </header>
+
+      {/* 📱 Mobile Drawer Overlay */}
+      {isMobileMenuOpen && <div className={styles.drawerOverlay} onClick={() => setIsMobileMenuOpen(false)} />}
+
+      {/* ⬅️ Sidebar (Drawer on Mobile) */}
+      <aside className={`${styles.sidebar} ${isMobileMenuOpen ? styles.sidebarOpen : ""}`}>
         <div className={styles.logoArea}>
           <div className={styles.logoText}>MARTS <span>Admin</span></div>
         </div>
@@ -138,17 +164,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <p>{session?.user?.name || "Admin"}</p>
               <span>Main Store</span>
             </div>
-            <button 
-              className={styles.logoutBtn} 
-              title="Logout"
-              onClick={async () => {
-                await authClient.signOut();
-                router.push("/login");
-              }}
-            >
-              <LogOut size={16} />
-            </button>
           </div>
+          <button 
+            className={styles.sidebarLogout} 
+            onClick={async () => {
+              await authClient.signOut();
+              router.push("/login");
+            }}
+          >
+            <LogOut size={16} />
+            <span>Sign Out</span>
+          </button>
         </div>
       </aside>
 

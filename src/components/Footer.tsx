@@ -33,6 +33,35 @@ export default function Footer() {
     setOpenSection(openSection === name ? null : name);
   };
 
+  const [email, setEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const { toast } = require("sonner");
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsSubscribing(true);
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message || "Subscribed!");
+        setEmail("");
+      } else {
+        toast.error(data.error || "Failed to subscribe");
+      }
+    } catch (err) {
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
+
   return (
     <footer className={styles.footer}>
       <div className={`${styles.container} container`}>
@@ -79,10 +108,23 @@ export default function Footer() {
           <div className={styles.newsletter}>
             <h4>Newsletter</h4>
             <p>Subscribe for Updates & Offers</p>
-            <div className={styles.form}>
-              <input type="email" placeholder="Email address..." className={styles.input} />
-              <button className={styles.subscribeBtn}>Subscribe</button>
-            </div>
+            <form className={styles.form} onSubmit={handleSubscribe}>
+              <input 
+                type="email" 
+                placeholder="Email address..." 
+                className={styles.input} 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <button 
+                type="submit" 
+                className={styles.subscribeBtn}
+                disabled={isSubscribing}
+              >
+                {isSubscribing ? "..." : "Subscribe"}
+              </button>
+            </form>
           </div>
 
         </div>

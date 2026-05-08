@@ -17,6 +17,7 @@ interface ProductGridProps {
   emptyMessage?: string;
   variant?: "masonry" | "grid";
   isCarouselOnMobile?: boolean;
+  rows?: number;
 }
 
 export default function ProductGrid({
@@ -27,9 +28,18 @@ export default function ProductGrid({
   isLoading: initialLoading,
   emptyMessage = "No products found.",
   variant = "masonry",
-  isCarouselOnMobile = false
+  isCarouselOnMobile = false,
+  rows = 1
 }: ProductGridProps) {
+  const [isMobile, setIsMobile] = useState(false);
   const { isEditMode } = useEditMode();
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   const { addProduct } = useInventory();
   const [products, setProducts] = useState<Product[]>(initialProducts || []);
   const [loading, setLoading] = useState(initialLoading ?? !initialProducts);
@@ -152,26 +162,52 @@ export default function ProductGrid({
   }
 
   return (
-    <section className={styles.section}>
+    <section className={`${styles.section} ${filterTag === "new" || filterTag === "new_arrivals" ? styles.newArrivalsSection : ""}`}>
       <div className={`${styles.container} container`}>
         {title && (
           <div className={styles.header}>
             <div className={styles.divider} />
             <h2 className={styles.title}>{title}</h2>
+            {isEditMode && (
+              <button 
+                className={styles.titleAddBtn} 
+                onClick={() => setIsAddModalOpen(true)}
+                title="Add product to this section"
+              >
+                <Plus size={20} />
+              </button>
+            )}
             <div className={styles.divider} />
           </div>
         )}
 
         {products.length > 0 ? (
           <div className={`
-            ${isCarouselOnMobile ? styles.carousel : styles.grid} 
+            ${isCarouselOnMobile ? styles.carouselContainer : styles.grid} 
             ${variant === "grid" && !isCarouselOnMobile ? styles.standardGrid : ""} 
           `}>
-            {products.map((product, index) => (
-              <ProductCard key={product.id} product={product} index={index} />
-            ))}
+            {isCarouselOnMobile && rows > 1 && isMobile ? (
+              Array.from({ length: rows }).map((_, rowIndex) => {
+                const rowProducts = products.filter((_, idx) => idx % rows === rowIndex);
+                return (
+                  <div key={rowIndex} className={styles.carousel}>
+                    {rowProducts.map((product, index) => (
+                      <ProductCard key={product.id} product={product} index={index} />
+                    ))}
+                  </div>
+                );
+              })
+            ) : (
+              <>
+                {products.map((product, index) => (
+                  <div key={product.id} className={isCarouselOnMobile && isMobile ? styles.carouselItem : ""}>
+                    <ProductCard product={product} index={index} />
+                  </div>
+                ))}
+              </>
+            )}
 
-            {isEditMode && (
+            {isEditMode && !isCarouselOnMobile && (
               <div 
                 className={styles.addCard} 
                 onClick={() => setIsAddModalOpen(true)}

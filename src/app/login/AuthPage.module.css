@@ -75,11 +75,20 @@
   left: 60px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: #f1f5f9;
+  border-radius: 50%;
   color: #6b7280;
-  font-weight: 500;
   text-decoration: none;
+  transition: all 0.2s;
+}
+
+.backHome:hover {
+  background: #e2e8f0;
+  color: #111827;
+  transform: translateX(-2px);
 }
 
 .formContainer {
@@ -106,6 +115,13 @@
 .socialButtons {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.socialButtonsSingle {
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 12px;
   margin-bottom: 24px;
 }
@@ -231,7 +247,7 @@
 }
 
 .submitBtn {
-  background: #111827;
+  background: #0f172a;
   color: white;
   padding: 14px;
   border-radius: 12px;
@@ -253,13 +269,20 @@
   text-align: center;
   font-size: 14px;
   color: #6b7280;
+  padding-bottom: 20px; /* Extra space to clear any floating elements */
 }
 
 .footer a {
-  color: #111827;
+  color: #0047AB; /* Official Brand Blue */
   font-weight: 700;
   text-decoration: none;
   margin-left: 4px;
+  transition: opacity 0.2s;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+  opacity: 0.8;
 }
 
 .errorBanner {

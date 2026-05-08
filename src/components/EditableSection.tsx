@@ -2,6 +2,7 @@
 
 import { useEditMode } from "@/context/EditModeContext";
 import { ArrowUp, ArrowDown, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface EditableSectionProps {
   id: string;
@@ -12,8 +13,11 @@ interface EditableSectionProps {
 
 export default function EditableSection({ id, index, totalBlocks, children }: EditableSectionProps) {
   const { isEditMode, moveBlock, deleteBlock } = useEditMode();
+  const [mounted, setMounted] = useState(false);
 
-  if (!isEditMode) return <>{children}</>;
+  useEffect(() => { setMounted(true); }, []);
+
+  if (!mounted || !isEditMode) return <>{children}</>;
 
   return (
     <div style={{

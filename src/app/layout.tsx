@@ -6,6 +6,7 @@ import CartSidebar from "@/components/CartSidebar";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { EditModeProvider } from "@/context/EditModeContext";
 import { InventoryProvider } from "@/context/InventoryContext";
+import { StoreProvider } from "@/context/StoreContext";
 import VisualSaveBar from "@/components/VisualSaveBar";
 import BackButton from "@/components/BackButton";
 
@@ -14,6 +15,9 @@ import BackButton from "@/components/BackButton";
 export const metadata: Metadata = {
   title: "MARTS | Business & Imports",
   description: "The Sound of Experience. Global imports delivered locally.",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 import { Toaster } from "sonner";
@@ -27,19 +31,21 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Toaster position="top-center" richColors />
-        <CartProvider>
-          <FavoritesProvider>
-            <InventoryProvider>
-              <EditModeProvider>
-                {children}
-                <CartSidebar />
-                <MobileBottomNav />
-                <VisualSaveBar />
-                <BackButton />
-              </EditModeProvider>
-            </InventoryProvider>
-          </FavoritesProvider>
-        </CartProvider>
+        <StoreProvider>
+          <CartProvider>
+            <FavoritesProvider>
+              <InventoryProvider>
+                <EditModeProvider>
+                  {children}
+                  <CartSidebar />
+                  <MobileBottomNav />
+                  <VisualSaveBar />
+                  <BackButton />
+                </EditModeProvider>
+              </InventoryProvider>
+            </FavoritesProvider>
+          </CartProvider>
+        </StoreProvider>
       </body>
     </html>
   );

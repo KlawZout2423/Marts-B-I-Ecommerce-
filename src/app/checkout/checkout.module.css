@@ -20,10 +20,11 @@
 .welcomeBack, .guestNotice {
   padding: 1rem;
   background: #f3f4f6;
-  border-radius: 12px;
+  background: #f1f5f9;
+  border-radius: 10px;
   margin-bottom: 2rem;
-  font-size: 0.95rem;
-  color: #4b5563;
+  font-size: 0.9rem;
+  color: #475569;
 }
 
 .guestNotice a {
@@ -40,15 +41,13 @@
   font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
-  color: #111827;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 0.75rem;
+  color: #0f172a;
 }
 
 .formGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .inputGroup {
@@ -62,23 +61,22 @@
 }
 
 .inputGroup label {
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: #374151;
+  color: #64748b;
 }
 
 .inputGroup input {
   padding: 0.75rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1.5px solid #e2e8f0;
   border-radius: 8px;
-  font-size: 1rem;
-  transition: all 0.2s ease;
+  outline: none;
+  transition: all 0.2s;
 }
 
 .inputGroup input:focus {
-  outline: none;
-  border-color: #111827;
-  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.05);
+  border-color: #0047AB;
+  box-shadow: 0 0 0 3px rgba(0, 71, 171, 0.1);
 }
 
 .paymentOptions {
@@ -106,25 +104,25 @@
 .paymentMethod input[type="radio"] {
   width: 1.2rem;
   height: 1.2rem;
-  accent-color: #111827;
+  accent-color: #0047AB;
 }
 
 .submitButton {
   width: 100%;
   padding: 1.25rem;
-  background: #111827;
+  background: #0047AB;
   color: white;
   border: none;
   border-radius: 12px;
   font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s;
   margin-top: 2rem;
 }
 
 .submitButton:hover {
-  background: #1f2937;
+  background: #003580;
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
@@ -226,7 +224,7 @@
 
 .continueButton {
   padding: 1rem 2rem;
-  background: #111827;
+  background: #0047AB;
   color: white;
   border-radius: 12px;
   text-decoration: none;

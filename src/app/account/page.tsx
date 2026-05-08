@@ -1,16 +1,35 @@
 "use client";
 
 import React from "react";
+import useSWR from "swr";
 import styles from "./account.module.css";
 import Link from "next/link";
-import { 
-  Package, 
-  CreditCard,
-  ChevronRight,
-  Clock
-} from "lucide-react";
+import { Package, CreditCard, ChevronRight, Clock } from "lucide-react";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+function getStatusClass(status: string) {
+  switch (status?.toLowerCase()) {
+    case "delivered": return styles.delivered;
+    case "shipped": return styles.shipped;
+    case "pending": return styles.pending;
+    case "cancelled": return styles.cancelled;
+    default: return styles.pending;
+  }
+}
 
 export default function AccountPage() {
+  const { data: orders = [], isLoading } = useSWR("/api/orders", fetcher, { refreshInterval: 5000 });
+
+  const totalOrders = Array.isArray(orders) ? orders.length : 0;
+  const pendingDeliveries = Array.isArray(orders) ? orders.filter((o: any) => o.status?.toLowerCase() !== "delivered").length : 0;
+  const totalSpent = Array.isArray(orders) ? orders.reduce((sum: number, o: any) => sum + (parseFloat(o.totalAmount) || 0), 0) : 0;
+  const recentOrders = Array.isArray(orders) ? orders.slice(0, 5) : [];
+
+  if (isLoading) {
+    return <div className={styles.loadingContainer}>Loading dashboard…</div>;
+  }
+
   return (
     <>
       {/* Quick Stats */}
@@ -20,7 +39,7 @@ export default function AccountPage() {
             <Package size={24} />
           </div>
           <div className={styles.statInfo}>
-            <span className={styles.statValue}>12</span>
+            <span className={styles.statValue}>{totalOrders}</span>
             <span className={styles.statLabel}>Total Orders</span>
           </div>
         </div>
@@ -29,7 +48,7 @@ export default function AccountPage() {
             <Clock size={24} />
           </div>
           <div className={styles.statInfo}>
-            <span className={styles.statValue}>2</span>
+            <span className={styles.statValue}>{pendingDeliveries}</span>
             <span className={styles.statLabel}>Pending Deliveries</span>
           </div>
         </div>
@@ -38,7 +57,7 @@ export default function AccountPage() {
             <CreditCard size={24} />
           </div>
           <div className={styles.statInfo}>
-            <span className={styles.statValue}>$4,250</span>
+            <span className={styles.statValue}>${totalSpent.toFixed(2)}</span>
             <span className={styles.statLabel}>Total Spent</span>
           </div>
         </div>
@@ -50,7 +69,6 @@ export default function AccountPage() {
           <h3>Recent Orders</h3>
           <Link href="/account/orders" className={styles.viewAll}>View All <ChevronRight size={16} /></Link>
         </div>
-        
         <div className={styles.ordersTableContainer}>
           <table className={styles.ordersTable}>
             <thead>
@@ -63,27 +81,23 @@ export default function AccountPage() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td><span className={styles.orderId}>#MRT-8492</span></td>
-                <td>Oct 24, 2023</td>
-                <td><span className={`${styles.statusPill} ${styles.delivered}`}>Delivered</span></td>
-                <td>$299.00</td>
-                <td><Link href="/account/orders/8492" className={styles.tableLink}>Details</Link></td>
-              </tr>
-              <tr>
-                <td><span className={styles.orderId}>#MRT-7210</span></td>
-                <td>Oct 12, 2023</td>
-                <td><span className={`${styles.statusPill} ${styles.shipped}`}>In Transit</span></td>
-                <td>$1,150.00</td>
-                <td><Link href="/account/orders/7210" className={styles.tableLink}>Details</Link></td>
-              </tr>
-              <tr>
-                <td><span className={styles.orderId}>#MRT-6844</span></td>
-                <td>Sep 28, 2023</td>
-                <td><span className={`${styles.statusPill} ${styles.delivered}`}>Delivered</span></td>
-                <td>$89.50</td>
-                <td><Link href="/account/orders/6844" className={styles.tableLink}>Details</Link></td>
-              </tr>
+              {recentOrders.length === 0 ? (
+                <tr>
+                  <td colSpan={5} style={{ textAlign: "center", padding: "2rem", opacity: 0.6 }}>
+                    No orders yet. Start shopping!
+                  </td>
+                </tr>
+              ) : (
+                recentOrders.map((order: any) => (
+                  <tr key={order.id}>
+                    <td data-label="Order ID"><span className={styles.orderId}>#{order.orderNumber}</span></td>
+                    <td data-label="Date">{new Date(order.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</td>
+                    <td data-label="Status"><span className={`${styles.statusPill} ${getStatusClass(order.status)}`}>{order.status}</span></td>
+                    <td data-label="Total">${parseFloat(order.totalAmount).toFixed(2)}</td>
+                    <td data-label="Action"><Link href={`/account/orders/${order.id}`} className={styles.tableLink}>Details</Link></td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -100,7 +114,6 @@ export default function AccountPage() {
             <Link href="/account/addresses" className={styles.editLink}>Edit Address</Link>
           </div>
         </div>
-        
         <div className={styles.infoCard}>
           <h3>Account Security</h3>
           <div className={styles.securityBox}>

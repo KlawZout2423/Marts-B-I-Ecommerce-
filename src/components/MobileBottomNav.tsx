@@ -14,8 +14,12 @@ export default function MobileBottomNav() {
     { icon: Home, label: "Home", href: "/" },
     { icon: Search, label: "Search", href: "/search" },
     { icon: ShoppingBag, label: "Shop", href: "/shop" },
-    { icon: Heart, label: "Wishlist", href: "/wishlist" },
   ];
+
+  // Don't show bottom nav on admin or auth pages to avoid overlap
+  if (pathname.startsWith("/admin") || pathname === "/login" || pathname === "/signup") {
+    return null;
+  }
 
   return (
     <div className={styles.bottomNav}>

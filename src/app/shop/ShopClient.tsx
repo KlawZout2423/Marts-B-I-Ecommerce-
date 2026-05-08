@@ -15,11 +15,13 @@ import {
   Gamepad2,
   Laptop,
   Check,
+  TrendingUp,
   TrendingDown,
   ArrowUpNarrowWide,
   ArrowDownWideNarrow,
   Clock,
-  Layout
+  Layout,
+  X
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import styles from "./ShopPage.module.css";
@@ -35,7 +37,7 @@ export default function ShopClient() {
   const [sortBy, setSortBy] = useState("newest");
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [priceRange, setPriceRange] = useState([0, 5000]);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Sync searchQuery with URL param when it changes
   useEffect(() => {
@@ -55,6 +57,7 @@ export default function ShopClient() {
     { name: "Books", icon: Book },
     { name: "Toys", icon: Gamepad2 },
     { name: "Electronics", icon: Laptop },
+    { name: "bestseller", icon: TrendingUp },
   ];
 
   const sortOptions = [
@@ -83,10 +86,65 @@ export default function ShopClient() {
       });
   }, []);
 
+  // Sync activeCategory with URL filter param
+  useEffect(() => {
+    const f = searchParams.get("filter");
+    if (f) {
+      setActiveCategory(f);
+    } else {
+      setActiveCategory("All");
+    }
+  }, [searchParams]);
+
   const filteredProducts = useMemo(() => {
     let result = [...allProducts];
 
-    if (activeCategory !== "All") {
+    // Handle special filters first
+    if (activeCategory === "new") {
+      // 30-Day Auto-Expiry Logic: 
+      // Only show 'new_arrivals' if they are less than 30 days old.
+      const taggedNew = result.filter(p => {
+        try {
+          const placements = p.placements || [];
+          if (!placements.includes("new_arrivals")) return false;
+          
+          const createdDate = new Date(p.createdAt);
+          const diffDays = Math.ceil(Math.abs(Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
+          
+          return diffDays <= 30; 
+        } catch { return false; }
+      });
+      
+      if (taggedNew.length > 0) {
+        result = taggedNew;
+      } else {
+        // Fallback: Just show the latest 12 products
+        result = [...result].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 12);
+      }
+    } else if (activeCategory === "bestseller") {
+      // Show products with 'bestseller' in placements
+      result = result.filter(p => {
+        try {
+          const placements = p.placements || [];
+          return placements.includes("bestseller");
+        } catch { return false; }
+      });
+    } else if (activeCategory === "sale") {
+      // Priority: Products with 'hot_sale' in placements, then items with discount
+      const taggedSale = result.filter(p => {
+        try {
+          const placements = p.placements || [];
+          return placements.includes("hot_sale");
+        } catch { return false; }
+      });
+
+      if (taggedSale.length > 0) {
+        result = taggedSale;
+      } else {
+        result = result.filter(p => (p as any).originalPrice && (p as any).originalPrice > p.price);
+      }
+    } else if (activeCategory !== "All") {
+      // Regular category filtering
       result = result.filter(p => p.category === activeCategory);
     }
 
@@ -105,10 +163,6 @@ export default function ShopClient() {
       result = result.filter(p => p.originalPrice);
     }
 
-    result = result.filter(p => {
-      const price = Number(p.price);
-      return price >= priceRange[0] && price <= priceRange[1];
-    });
 
 
     return result;
@@ -119,7 +173,7 @@ export default function ShopClient() {
       <Navbar />
       
       <div className={styles.shopWrapper}>
-        <div className="container">
+        <div className={`container ${styles.shopContainer}`}>
           {/* Top Bar / Breadcrumbs */}
           <div className={styles.topBar}>
             <h1 className={styles.pageTitle}>Shop App</h1>
@@ -130,9 +184,9 @@ export default function ShopClient() {
             </nav>
           </div>
 
-          <div className={styles.mainLayout}>
+          <div className={`${styles.mainLayout} ${isSidebarCollapsed ? styles.mainLayoutCollapsed : ""}`}>
             {/* Sidebar */}
-            <aside className={styles.sidebar}>
+            <aside className={`${styles.sidebar} ${isSidebarCollapsed ? styles.sidebarCollapsed : ""}`}>
               <div className={styles.filterSection}>
                 <h3 className={styles.sectionTitle}>Filter By Category</h3>
                 <div className={styles.filterList}>
@@ -146,7 +200,6 @@ export default function ShopClient() {
                           setActiveCategory(cat.name);
                           if (cat.name === "All") {
                             setSearchQuery("");
-                            setPriceRange([0, 5000]);
                           }
                         }}
                       >
@@ -175,24 +228,6 @@ export default function ShopClient() {
                 </div>
               </div>
 
-              <div className={styles.filterSection}>
-                <h3 className={styles.sectionTitle}>Price Range</h3>
-                <div style={{ padding: '0 1rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '0.85rem', fontWeight: 600 }}>
-                    <span>${priceRange[0]}</span>
-                    <span>${priceRange[1]}</span>
-                  </div>
-                  <input 
-                    type="range" 
-                    min="0" 
-                    max="5000" 
-                    step="50"
-                    value={priceRange[1]}
-                    onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                    style={{ width: '100%', cursor: 'pointer' }}
-                  />
-                </div>
-              </div>
 
               <div className={styles.filterSection}>
                 <h3 className={styles.sectionTitle}>By Gender</h3>
@@ -212,6 +247,20 @@ export default function ShopClient() {
 
             {/* Content Area */}
             <div className={styles.contentArea}>
+              {/* 📱 Shopify-style Sticky Action Bar (Mobile Only) */}
+              <div className={styles.stickyActionBar}>
+                <div className={styles.activeFilters}>
+                  <span className={styles.resultCount}>{filteredProducts.length} Products</span>
+                </div>
+                <button 
+                  className={styles.mobileFilterBtn}
+                  onClick={() => setIsSidebarOpen(true)}
+                >
+                  <ArrowUpNarrowWide size={16} />
+                  <span>Filter & Sort</span>
+                </button>
+              </div>
+
               {/* Mobile Category Scroll */}
               <div className={styles.mobileCategoryScroll}>
                 {categories.map((cat) => {
@@ -224,7 +273,6 @@ export default function ShopClient() {
                         setActiveCategory(cat.name);
                         if (cat.name === "All") {
                           setSearchQuery("");
-                          setPriceRange([0, 5000]);
                         }
                       }}
                     >
@@ -234,13 +282,68 @@ export default function ShopClient() {
                 })}
               </div>
 
+              {/* Sidebar Drawer for Mobile */}
+              {isSidebarOpen && (
+                <div className={styles.drawerOverlay} onClick={() => setIsSidebarOpen(false)}>
+                  <div className={styles.drawerContent} onClick={(e) => e.stopPropagation()}>
+                    <div className={styles.drawerHeader}>
+                      <h3>Filter & Sort</h3>
+                      <button onClick={() => setIsSidebarOpen(false)}><X size={20} /></button>
+                    </div>
+                    <div className={styles.drawerBody}>
+                      {/* Reuse sidebar logic inside drawer for mobile */}
+                      <div className={styles.filterSection}>
+                        <h4 className={styles.drawerSubTitle}>Category</h4>
+                        <div className={styles.drawerGrid}>
+                          {categories.map(cat => (
+                            <button 
+                              key={cat.name}
+                              className={`${styles.drawerItem} ${activeCategory === cat.name ? styles.drawerItemActive : ""}`}
+                              onClick={() => setActiveCategory(cat.name)}
+                            >
+                              {cat.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className={styles.filterSection}>
+                        <h4 className={styles.drawerSubTitle}>Sort By</h4>
+                        <div className={styles.drawerGrid}>
+                          {sortOptions.map(opt => (
+                            <button 
+                              key={opt.id}
+                              className={`${styles.drawerItem} ${sortBy === opt.id ? styles.drawerItemActive : ""}`}
+                              onClick={() => setSortBy(opt.id)}
+                            >
+                              {opt.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className={styles.drawerFooter}>
+                      <button className={styles.applyBtn} onClick={() => setIsSidebarOpen(false)}>Apply Changes</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className={styles.contentHeader}>
-                <h2 className={styles.productsHeading}>Products</h2>
+                <div className={styles.headerLeft}>
+                  <button 
+                    className={styles.sidebarToggle}
+                    onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                  >
+                    <MenuIcon size={18} />
+                    <span>{isSidebarCollapsed ? "Show Filters" : "Hide Filters"}</span>
+                  </button>
+                  <h2 className={styles.productsHeading}>Products</h2>
+                </div>
                 <div className={styles.searchWrapper}>
                   <Search size={18} className={styles.searchIcon} />
                   <input 
                     type="text" 
-                    placeholder="Look up Products..." 
+                    placeholder="Search catalog..." 
                     className={styles.searchInput}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}

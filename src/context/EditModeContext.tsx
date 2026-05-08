@@ -36,27 +36,24 @@ type EditModeContextType = {
 const EditModeContext = createContext<EditModeContextType | undefined>(undefined);
 
 export function EditModeProvider({ children }: { children: React.ReactNode }) {
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [canEdit, setCanEdit] = useState(false);
+  const { data: session } = authClient.useSession();
+  const canEdit = !!(session?.user && (session.user as any).role === "admin");
   const [pendingChanges, setPendingChanges] = useState<Record<string, any>>({});
 
-  const { data: session } = authClient.useSession();
-
-  useEffect(() => {
-    // Only allow editing if user is logged in and has admin role
-    if (session?.user && (session.user as any).role === "admin") {
-      setCanEdit(true); 
-      
-      // Check if we should start in edit mode (e.g. via URL param)
+  const [isEditMode, setIsEditMode] = useState(() => {
+    if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('edit') === 'true') {
-        setIsEditMode(true);
-      }
-    } else {
-      setCanEdit(false);
+      return params.get('edit') === 'true';
+    }
+    return false;
+  });
+
+  // Automatically turn off edit mode if user loses permission
+  useEffect(() => {
+    if (!canEdit && isEditMode) {
       setIsEditMode(false);
     }
-  }, [session]);
+  }, [canEdit, isEditMode]);
 
   const toggleEditMode = () => {
     setIsEditMode(!isEditMode);

@@ -3,12 +3,14 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { useStore } from "@/context/StoreContext";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./CartSidebar.module.css";
 
 export default function CartSidebar() {
   const { cart, isOpen, setIsOpen, updateQuantity, removeFromCart, totalPrice, totalItems } = useCart();
+  const { settings } = useStore();
 
   return (
     <AnimatePresence>
@@ -44,7 +46,7 @@ export default function CartSidebar() {
                 <p className={styles.progressText}>✨ You've unlocked <strong>Free Shipping!</strong></p>
               ) : (
                 <p className={styles.progressText}>
-                  Spend <strong>${(100 - totalPrice).toFixed(2)}</strong> more for free shipping
+                  Spend <strong>{settings.currencySymbol}{(100 - totalPrice).toFixed(2)}</strong> more for free shipping
                 </p>
               )}
               <div className={styles.progressBar}>
@@ -74,7 +76,7 @@ export default function CartSidebar() {
                     <div className={styles.itemInfo}>
                       <div className={styles.itemHeader}>
                         <h3>{item.name}</h3>
-                        <span className={styles.itemPrice}>${item.price}</span>
+                        <span className={styles.itemPrice}>{settings.currencySymbol}{item.price}</span>
                       </div>
                       <div className={styles.itemActions}>
                         <div className={styles.quantity}>
@@ -99,7 +101,7 @@ export default function CartSidebar() {
               <div className={styles.footer}>
                 <div className={styles.subtotal}>
                   <span>Subtotal</span>
-                  <span>${totalPrice.toFixed(2)}</span>
+                  <span>{settings.currencySymbol}{totalPrice.toFixed(2)}</span>
                 </div>
                 <p className={styles.taxNote}>Shipping and taxes calculated at checkout.</p>
                 <Link 

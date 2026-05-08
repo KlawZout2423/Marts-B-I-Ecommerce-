@@ -63,7 +63,7 @@ export default function Hero({ id, content: passedContent }: { id?: string, cont
           <div className={styles.content}>
             {/* Pill Badge */}
             <motion.div 
-              className={`${styles.pill} ${isEditMode ? styles.editable : ""}`}
+              className={`${styles.pill} ${isEditMode ? 'editable' : ""}`}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
@@ -84,7 +84,7 @@ export default function Hero({ id, content: passedContent }: { id?: string, cont
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
                 style={{ display: "block" }}
-                className={isEditMode ? styles.editable : ""}
+                className={isEditMode ? 'editable' : ""}
                 contentEditable={isEditMode}
                 suppressContentEditableWarning
                 onBlur={(e) => id && updateBlockContent(id, { titlePrefix: e.currentTarget.textContent })}
@@ -92,7 +92,7 @@ export default function Hero({ id, content: passedContent }: { id?: string, cont
                 {content.titlePrefix}
               </motion.span>
               <motion.span
-                className={`${styles.titleHighlight} ${isEditMode ? styles.editable : ""}`}
+                className={`${styles.titleHighlight} ${isEditMode ? 'editable' : ""}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
@@ -106,7 +106,7 @@ export default function Hero({ id, content: passedContent }: { id?: string, cont
             </h1>
             
             <motion.p 
-              className={`${styles.subtitle} ${isEditMode ? styles.editable : ""}`}
+              className={`${styles.subtitle} ${isEditMode ? 'editable' : ""}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.6 }}

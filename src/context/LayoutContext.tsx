@@ -13,13 +13,13 @@ interface LayoutContextType {
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
 
 export function LayoutProvider({ children }: { children: React.ReactNode }) {
-  const [mode, setMode] = useState<LayoutMode>("top");
-
-  // Load preference from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem("lumina-layout-mode") as LayoutMode;
-    if (saved) setMode(saved);
-  }, []);
+  const [mode, setMode] = useState<LayoutMode>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("lumina-layout-mode") as LayoutMode;
+      return saved || "top";
+    }
+    return "top";
+  });
 
   const handleSetMode = (newMode: LayoutMode) => {
     setMode(newMode);

@@ -316,13 +316,14 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
 }
 
 .pageCard:hover {
   border-color: #cbd5e1;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.07);
-  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.09);
+  transform: translateY(-4px) scale(1.01);
 }
 
 .pageCardIcon {
@@ -409,3 +410,46 @@
 .launcherTip strong {
   color: #0c4a6e;
 }
+
+@media (max-width: 768px) {
+  .launcherPage {
+    padding: 20px 0;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .launcherHeader h1 {
+    font-size: 22px;
+  }
+
+  .pageGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .pageCard {
+    padding: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .pageCardActions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .editPageBtn,
+  .viewBtn {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .launcherTip {
+    font-size: 13px;
+    padding: 12px 16px;
+  }
+}
+

@@ -7,8 +7,13 @@ import { useEditMode } from "@/context/EditModeContext";
 import { Mail, Phone, MapPin, Send, Globe, Users, MessagesSquare, Share2 } from "lucide-react";
 import styles from "./ContactPage.module.css";
 
+import { EditableText } from "@/components/EditableText";
+
+import { useStore } from "@/context/StoreContext";
+
 export default function ContactPage() {
   const { isEditMode, setPageBlocks, setActivePage } = useEditMode();
+  const { settings } = useStore();
   const [content, setContent] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -18,7 +23,6 @@ export default function ContactPage() {
       .then(res => res.json())
       .then(data => {
         if (data && data.blocks && Array.isArray(data.blocks)) {
-          // Find the static content block
           const staticBlock = data.blocks.find((b: any) => b.type === "static");
           if (staticBlock && staticBlock.content) {
             setContent(staticBlock.content);
@@ -30,7 +34,7 @@ export default function ContactPage() {
         }
         setIsLoading(false);
       });
-  }, []);
+  }, [setActivePage]);
 
   // Sync with global save bar
   useEffect(() => {
@@ -46,18 +50,7 @@ export default function ContactPage() {
 
   if (isLoading) return null;
 
-  const t = (id: string, def: string) => content?.[id] || def;
-
-  const EditableText = ({ id, def, className, tag: Tag = "p" }: any) => (
-    <Tag 
-      className={`${className} ${isEditMode ? styles.editable : ""}`}
-      contentEditable={isEditMode}
-      suppressContentEditableWarning
-      onBlur={(e: any) => updateField(id, e.currentTarget.textContent)}
-    >
-      {t(id, def)}
-    </Tag>
-  );
+  const tProps = { content, updateField, isEditMode, styles };
 
   return (
     <main className={styles.page}>
@@ -68,8 +61,8 @@ export default function ContactPage() {
       {/* 🦸 Hero */}
       <section className={styles.hero}>
         <div className="container">
-          <EditableText tag="h1" id="hero_title" def="Get in Touch" />
-          <EditableText id="hero_desc" def="Have questions about our global imports? Our dedicated team is here to help you find exactly what you're looking for." />
+          <EditableText {...tProps} tag="h1" id="hero_title" def="Get in Touch" />
+          <EditableText {...tProps} id="hero_desc" def="Have questions about our global imports? Our dedicated team is here to help you find exactly what you're looking for." />
         </div>
       </section>
 
@@ -79,23 +72,51 @@ export default function ContactPage() {
           
           {/* ✍️ Left: Form */}
           <section className={styles.formSection}>
-            <EditableText tag="h2" id="form_title" def="Send us a Message" />
-            <EditableText className={styles.formSubtitle} id="form_subtitle" def="We usually respond within 24 hours." />
+            <EditableText {...tProps} tag="h2" id="form_title" def="Send us a Message" />
+            <EditableText {...tProps} className={styles.formSubtitle} id="form_subtitle" def="We usually respond within 24 hours." />
             
-            <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
+            <form 
+              className={styles.form} 
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const payload = {
+                  name: formData.get("name"),
+                  email: formData.get("email"),
+                  message: formData.get("message")
+                };
+
+                const { toast } = await import("sonner");
+                try {
+                  const res = await fetch("/api/contact", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                  });
+                  if (res.ok) {
+                    toast.success("Message sent! We'll get back to you soon.");
+                    (e.target as HTMLFormElement).reset();
+                  } else {
+                    toast.error("Failed to send message. Please try again.");
+                  }
+                } catch (err) {
+                  toast.error("Something went wrong.");
+                }
+              }}
+            >
               <div className={styles.inputGroup}>
                 <label htmlFor="name">Full Name</label>
-                <input type="text" id="name" placeholder="John Doe" className={styles.input} required />
+                <input type="text" id="name" name="name" placeholder="John Doe" className={styles.input} required />
               </div>
 
               <div className={styles.inputGroup}>
                 <label htmlFor="email">Email Address</label>
-                <input type="email" id="email" placeholder="name@example.com" className={styles.input} required />
+                <input type="email" id="email" name="email" placeholder="name@example.com" className={styles.input} required />
               </div>
 
               <div className={styles.inputGroup}>
                 <label htmlFor="message">Message</label>
-                <textarea id="message" placeholder="How can we help you?" className={styles.textarea} required></textarea>
+                <textarea id="message" name="message" placeholder="How can we help you?" className={styles.textarea} required></textarea>
               </div>
 
               <button type="submit" className={styles.submitBtn}>
@@ -108,14 +129,14 @@ export default function ContactPage() {
           {/* 📞 Right: Info */}
           <aside className={styles.infoSection}>
             <div className={styles.infoBlock}>
-              <EditableText tag="h3" id="info_title" def="Contact Information" />
+              <EditableText {...tProps} tag="h3" id="info_title" def="Contact Information" />
               <div className={styles.infoList}>
                 <div className={styles.infoItem}>
                   <div className={styles.iconBox}><Mail size={20} /></div>
                   <div className={styles.infoText}>
                     <h4>Email Us</h4>
-                    <EditableText id="email1" def="support@martsbi.com" />
-                    <EditableText id="email2" def="orders@martsbi.com" />
+                    <p style={{ margin: 0, color: '#475569' }}>{settings.contactEmail || "support@martsbi.com"}</p>
+                    <p style={{ margin: 0, color: '#475569' }}>orders@martsbi.com</p>
                   </div>
                 </div>
 
@@ -123,8 +144,8 @@ export default function ContactPage() {
                   <div className={styles.iconBox}><Phone size={20} /></div>
                   <div className={styles.infoText}>
                     <h4>Call Us</h4>
-                    <EditableText id="phone" def="+1 (555) 123-4567" />
-                    <EditableText id="hours" def="Mon - Fri, 9am - 6pm EST" />
+                    <p style={{ margin: 0, color: '#475569' }}>{settings.contactPhone || "+1 (555) 123-4567"}</p>
+                    <EditableText {...tProps} id="hours" def="Mon - Fri, 9am - 6pm EST" />
                   </div>
                 </div>
               </div>

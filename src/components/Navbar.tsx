@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import PromoBanner from "./PromoBanner";
 import { ShoppingCart, Heart, Search, Menu, X, User, LogOut, Package, ChevronDown } from "lucide-react";
 import Link from "next/link";
@@ -12,6 +13,7 @@ import { useEditMode } from "@/context/EditModeContext";
 import styles from "./Navbar.module.css";
 
 const Navbar = () => {
+  const [isMounted, setIsMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
@@ -32,6 +34,7 @@ const Navbar = () => {
   const { isEditMode, toggleEditMode, canEdit } = useEditMode();
 
   useEffect(() => {
+    setIsMounted(true);
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -75,13 +78,29 @@ const Navbar = () => {
 
   // Accurately determine the active nav link, including query-param links
   const isLinkActive = (href: string): boolean => {
+    if (!isMounted || !pathname) return false;
+
+    // Split href into path and query
     const [hrefPath, hrefQuery] = href.split("?");
-    if (hrefPath === "/") return pathname === "/";
-    if (!hrefQuery) return pathname === hrefPath;
-    // For links with query params (e.g. /shop?filter=new), match path + param
-    const paramKey = hrefQuery.split("=")[0];
-    const paramVal = hrefQuery.split("=")[1];
-    return pathname === hrefPath && searchParams.get(paramKey) === paramVal;
+    
+    // Exact match for the home page
+    if (hrefPath === "/") {
+      return pathname === "/";
+    }
+
+    // If there's a query param (like ?filter=new), we need exact matches for both
+    if (hrefQuery) {
+      const [key, val] = hrefQuery.split("=");
+      return pathname === hrefPath && searchParams.get(key) === val;
+    }
+
+    // For regular pages like /about, we use exact path matching
+    // We also avoid highlighting base /shop if a filter is active
+    if (hrefPath === "/shop" && searchParams.get("filter")) {
+      return false;
+    }
+
+    return pathname === hrefPath;
   };
 
   const getInitials = (name: string) =>
@@ -107,13 +126,17 @@ const Navbar = () => {
         <PromoBanner />
         <nav className={`${styles.navbar} ${isScrolled ? styles.scrolled : ""}`}>
           <div className={`container ${styles.navContainer}`}>
+            {/* Mobile Hamburger (Extreme Left) */}
+            <button className={styles.menuBtn} onClick={() => setIsOpen(!isOpen)} aria-label="Menu">
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
 
-            {/* Logo */}
+            {/* Logo (Centered on Mobile) */}
             <Link href="/" className={styles.logo}>
               <img src="/logo.png" alt="MARTS Logo" className={styles.logoImage} />
             </Link>
 
-            {/* Desktop Nav Links */}
+            {/* Desktop Nav Links (Hidden on Mobile) */}
             <div className={styles.desktopNav}>
               {navLinks.map((link) => (
                   <Link
@@ -126,34 +149,27 @@ const Navbar = () => {
               ))}
             </div>
 
-            {/* Actions */}
+            {/* Actions (Right) */}
             <div className={styles.actions}>
-
-              {/* Search Icon — opens Shopify-style overlay */}
+              {/* Search Icon — Hidden on mobile as we use the full row search bar */}
               <button
-                className={styles.actionIcon}
+                className={`${styles.actionIcon} ${styles.hideMobileSearch}`}
                 aria-label="Search"
                 onClick={() => setIsSearchOpen(true)}
               >
                 <Search size={20} />
               </button>
 
-              {/* Favorites / Wishlist */}
-              <Link href="/wishlist" className={styles.actionIcon} aria-label="Wishlist">
+              {/* Favorites / Wishlist — Hidden on mobile to keep Row 1 clean */}
+              <Link href="/wishlist" className={`${styles.actionIcon} ${styles.hideMobile}`} aria-label="Wishlist">
                 <Heart size={20} />
-                {totalFavorites > 0 && (
+                {isMounted && totalFavorites > 0 && (
                   <span className={styles.badge}>{totalFavorites}</span>
                 )}
               </Link>
 
-              {/* Cart */}
-              <button className={styles.cartBtn} onClick={() => setCartOpen(true)} aria-label="Cart">
-                <ShoppingCart size={20} />
-                {totalItems > 0 && <span className={styles.cartCount}>{totalItems}</span>}
-              </button>
-
               {/* Account */}
-              {session ? (
+              {isMounted && session ? (
                 <div className={styles.accountWrapper} ref={accountRef}>
                   <button
                     className={styles.avatarBtn}
@@ -163,82 +179,123 @@ const Navbar = () => {
                     <div className={styles.userInitials}>
                       {getInitials(session.user.name || "User")}
                     </div>
-                    <ChevronDown size={12} className={`${styles.chevron} ${isAccountOpen ? styles.chevronOpen : ""}`} />
                   </button>
-
-                  {isAccountOpen && (
-                    <div className={styles.accountDropdown}>
-                      <div className={styles.dropdownHeader}>
-                        <div className={styles.userInitialsLarge}>
-                          {getInitials(session.user.name || "User")}
+                  <AnimatePresence>
+                    {isAccountOpen && (
+                      <motion.div 
+                        className={styles.accountDropdown}
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                      >
+                        <div className={styles.dropdownHeader}>
+                          <div className={styles.userInitialsLarge}>
+                            {getInitials(session.user.name || "User")}
+                          </div>
+                          <div>
+                            <p className={styles.dropdownName}>{session.user.name}</p>
+                            <p className={styles.dropdownEmail}>{session.user.email}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className={styles.dropdownName}>{session.user.name}</p>
-                          <p className={styles.dropdownEmail}>{session.user.email}</p>
-                        </div>
-                      </div>
-                      <div className={styles.dropdownDivider} />
-                      <Link href="/account" className={styles.dropdownLink} onClick={() => setIsAccountOpen(false)}>
-                        <User size={15} /> Profile
-                      </Link>
-                      <Link href="/account/orders" className={styles.dropdownLink} onClick={() => setIsAccountOpen(false)}>
-                        <Package size={15} /> My Orders
-                      </Link>
-                      {canEdit && (
-                        <>
-                          <div className={styles.dropdownDivider} />
-                          <button 
-                            className={`${styles.dropdownLink} ${isEditMode ? styles.editModeActive : ""}`} 
-                            onClick={() => { toggleEditMode(); setIsAccountOpen(false); }}
-                          >
-                            <div className={styles.toggleTrack}>
-                              <div className={`${styles.toggleThumb} ${isEditMode ? styles.toggleThumbActive : ""}`} />
-                            </div>
-                            {isEditMode ? "Exit Edit Mode" : "Enter Edit Mode"}
-                          </button>
-                        </>
-                      )}
-                      <div className={styles.dropdownDivider} />
-                      <button className={styles.dropdownLogout} onClick={handleLogout}>
-                        <LogOut size={15} /> Sign Out
-                      </button>
-                    </div>
-                  )}
+                        <div className={styles.dropdownDivider} />
+                        <Link href="/account" className={styles.dropdownLink} onClick={() => setIsAccountOpen(false)}>
+                          <User size={15} /> Profile
+                        </Link>
+                        <Link href="/account/orders" className={styles.dropdownLink} onClick={() => setIsAccountOpen(false)}>
+                          <Package size={15} /> My Orders
+                        </Link>
+                        {canEdit && (
+                          <>
+                            <div className={styles.dropdownDivider} />
+                            <button 
+                              className={`${styles.dropdownLink} ${isEditMode ? styles.editModeActive : ""}`} 
+                              onClick={() => { toggleEditMode(); setIsAccountOpen(false); }}
+                            >
+                              <div className={styles.toggleTrack}>
+                                <div className={`${styles.toggleThumb} ${isEditMode ? styles.toggleThumbActive : ""}`} />
+                              </div>
+                              {isEditMode ? "Exit Edit Mode" : "Enter Edit Mode"}
+                            </button>
+                          </>
+                        )}
+                        <div className={styles.dropdownDivider} />
+                        <button className={styles.dropdownLogout} onClick={handleLogout}>
+                          <LogOut size={15} /> Sign Out
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               ) : (
                 <Link href="/login" className={styles.loginBtn}>
                   <User size={18} />
-                  <span>Login</span>
+                  <span className={styles.hideMobile}>Sign In</span>
                 </Link>
               )}
 
-              {/* Mobile Hamburger */}
-              <button className={styles.menuBtn} onClick={() => setIsOpen(!isOpen)} aria-label="Menu">
-                {isOpen ? <X size={24} /> : <Menu size={24} />}
+              {/* Cart */}
+              <button className={styles.cartBtn} onClick={() => setCartOpen(true)} aria-label="Cart">
+                <ShoppingCart size={20} />
+                {isMounted && totalItems > 0 && <span className={styles.cartCount}>{totalItems}</span>}
               </button>
             </div>
           </div>
 
-          {/* Mobile Nav */}
-          {isOpen && (
-            <div className={styles.mobileNav}>
-              {navLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    className={`${styles.mobileNavLink} ${isLinkActive(link.href) ? styles.mobileActive : ""}`}
-                    onClick={() => setIsOpen(false)}
+          {/* 📱 Mobile Search Row (Row 2) - Jumia Style */}
+          <div className={styles.mobileSearchRow}>
+            <form className={styles.mobileSearchForm} onSubmit={handleSearch}>
+              <Search size={18} className={styles.mobileSearchIcon} />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search for products, brands..."
+                className={styles.mobileSearchInput}
+              />
+            </form>
+          </div>
+
+          {/* Mobile Nav Drawer */}
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div 
+                className={styles.mobileNav}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                {navLinks.map((link, idx) => (
+                    <motion.div
+                      key={link.name}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 + idx * 0.05 }}
+                    >
+                      <Link
+                        href={link.href}
+                        className={`${styles.mobileNavLink} ${isLinkActive(link.href) ? styles.mobileActive : ""}`}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {link.name}
+                      </Link>
+                    </motion.div>
+                ))}
+                {isMounted && !session && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 }}
                   >
-                    {link.name}
-                  </Link>
-              ))}
-              {!session && (
-                <Link href="/login" className={styles.mobileLoginBtn} onClick={() => setIsOpen(false)}>
-                  Login / Sign Up
-                </Link>
-              )}
-            </div>
-          )}
+                    <Link href="/login" className={styles.mobileLoginBtn} onClick={() => setIsOpen(false)}>
+                      Login / Sign Up
+                    </Link>
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </nav>
       </header>
       <div className={styles.headerSpacer} />

@@ -14,16 +14,17 @@ export default function BackButton() {
     setMounted(true);
   }, []);
 
-  // Don't render on the home page or server side
-  if (!mounted || pathname === "/") return null;
+  // Don't render on home page, admin pages, login/signup, or server side
+  if (!mounted || pathname === "/" || pathname.startsWith("/admin") || pathname === "/login" || pathname === "/signup") return null;
 
   return (
     <button
       onClick={() => router.back()}
       className={styles.backBtn}
       aria-label="Go back to previous page"
+      title="Go back"
     >
-      <ArrowLeft size={24} />
+      <ArrowLeft size={20} />
     </button>
   );
 }

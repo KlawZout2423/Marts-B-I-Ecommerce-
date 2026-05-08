@@ -63,8 +63,8 @@ export default function SignupPage() {
 
         {/* 📝 Form Section */}
         <div className={styles.formSection}>
-          <Link href="/" className={styles.backHome}>
-            <ArrowLeft size={16} /> Back to Home
+          <Link href="/" className={styles.backHome} title="Back to Home">
+            <ArrowLeft size={20} />
           </Link>
 
           <div className={styles.formContainer}>
@@ -73,12 +73,9 @@ export default function SignupPage() {
               <p>Join thousands of professionals worldwide</p>
             </header>
 
-            <div className={styles.socialButtons}>
+            <div className={styles.socialButtonsSingle}>
               <button className={styles.socialBtn}>
-                <Globe size={18} /> Google
-              </button>
-              <button className={styles.socialBtn}>
-                <Code size={18} /> GitHub
+                <Globe size={18} /> Continue with Google
               </button>
             </div>
 

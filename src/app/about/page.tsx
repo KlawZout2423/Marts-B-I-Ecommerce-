@@ -8,6 +8,8 @@ import { Shield, Globe, Headset, CheckCircle2, Package, Search, Truck, ShoppingB
 import Link from "next/link";
 import styles from "./AboutPage.module.css";
 
+import { EditableText } from "@/components/EditableText";
+
 export default function AboutPage() {
   const { isEditMode, setPageBlocks, setActivePage } = useEditMode();
   const [content, setContent] = useState<any>(null);
@@ -19,7 +21,6 @@ export default function AboutPage() {
       .then(res => res.json())
       .then(data => {
         if (data && data.blocks && Array.isArray(data.blocks)) {
-          // Find the static content block
           const staticBlock = data.blocks.find((b: any) => b.type === "static");
           if (staticBlock && staticBlock.content) {
             setContent(staticBlock.content);
@@ -31,7 +32,7 @@ export default function AboutPage() {
         }
         setIsLoading(false);
       });
-  }, []);
+  }, [setActivePage]);
 
   // Sync with global save bar
   useEffect(() => {
@@ -47,18 +48,7 @@ export default function AboutPage() {
 
   if (isLoading) return null;
 
-  const t = (id: string, def: string) => content?.[id] || def;
-
-  const EditableText = ({ id, def, className, tag: Tag = "p" }: any) => (
-    <Tag 
-      className={`${className} ${isEditMode ? styles.editable : ""}`}
-      contentEditable={isEditMode}
-      suppressContentEditableWarning
-      onBlur={(e: any) => updateField(id, e.currentTarget.textContent)}
-    >
-      {t(id, def)}
-    </Tag>
-  );
+  const tProps = { content, updateField, isEditMode, styles };
 
   return (
     <main className={styles.page}>
@@ -69,8 +59,8 @@ export default function AboutPage() {
       {/* 🦸 1. HERO SECTION */}
       <section className={styles.hero}>
         <div className="container">
-          <EditableText tag="h1" id="hero_title" def="About MARTS B&I" />
-          <EditableText id="hero_desc" def="Delivering quality products through trusted global sourcing." />
+          <EditableText {...tProps} tag="h1" id="hero_title" def="About MARTS B&I" />
+          <EditableText {...tProps} id="hero_desc" def="Delivering quality products through trusted global sourcing." />
         </div>
       </section>
 
@@ -83,8 +73,8 @@ export default function AboutPage() {
             </div>
             <div className={styles.featureContent}>
               <span className={styles.tag}>Sourcing</span>
-              <EditableText tag="h2" id="feat1_title" def="Global Reach, Local Impact" />
-              <EditableText id="feat1_desc" def="We traverse the globe to find manufacturers who share our commitment to excellence. By cutting out the middleman, we bring world-class innovation directly to your local market without the premium markup." />
+              <EditableText {...tProps} tag="h2" id="feat1_title" def="Global Reach, Local Impact" />
+              <EditableText {...tProps} id="feat1_desc" def="We traverse the globe to find manufacturers who share our commitment to excellence. By cutting out the middleman, we bring world-class innovation directly to your local market without the premium markup." />
             </div>
           </div>
 
@@ -94,8 +84,8 @@ export default function AboutPage() {
             </div>
             <div className={styles.featureContent}>
               <span className={styles.tag}>Verification</span>
-              <EditableText tag="h2" id="feat2_title" def="Quality You Can Feel" />
-              <EditableText id="feat2_desc" def="Every item in our catalogue goes through a rigorous multi-stage inspection process. From materials testing to final packaging, we ensure that what arrives at your door is nothing short of perfection." />
+              <EditableText {...tProps} tag="h2" id="feat2_title" def="Quality You Can Feel" />
+              <EditableText {...tProps} id="feat2_desc" def="Every item in our catalogue goes through a rigorous multi-stage inspection process. From materials testing to final packaging, we ensure that what arrives at your door is nothing short of perfection." />
             </div>
           </div>
         </div>
@@ -106,7 +96,7 @@ export default function AboutPage() {
         <div className={styles.container}>
           <div className={styles.textContainer}>
             <div className={styles.identity}>
-              <EditableText id="identity_text" def="MARTS B&I is a business focused on sourcing and delivering high-quality imported products for everyday use. We prioritize reliability, affordability, and customer satisfaction. Our mission is to bridge the gap between world-class manufacturing and your doorstep." />
+              <EditableText {...tProps} id="identity_text" def="MARTS B&I is a business focused on sourcing and delivering high-quality imported products for everyday use. We prioritize reliability, affordability, and customer satisfaction. Our mission is to bridge the gap between world-class manufacturing and your doorstep." />
             </div>
           </div>
         </div>
@@ -119,18 +109,18 @@ export default function AboutPage() {
           <div className={styles.grid}>
             <div className={styles.card}>
               <div className={styles.iconWrapper}><Globe size={32} /></div>
-              <EditableText tag="h3" id="wd1_title" def="Source Globally" />
-              <EditableText id="wd1_desc" def="We scour global markets to find innovative and high-demand products that meet our strict criteria." />
+              <EditableText {...tProps} tag="h3" id="wd1_title" def="Source Globally" />
+              <EditableText {...tProps} id="wd1_desc" def="We scour global markets to find innovative and high-demand products that meet our strict criteria." />
             </div>
             <div className={styles.card}>
               <div className={styles.iconWrapper}><Shield size={32} /></div>
-              <EditableText tag="h3" id="wd2_title" def="Ensure Quality" />
-              <EditableText id="wd2_desc" def="Every product undergoes a rigorous quality check before it reaches our inventory and your hands." />
+              <EditableText {...tProps} tag="h3" id="wd2_title" def="Ensure Quality" />
+              <EditableText {...tProps} id="wd2_desc" def="Every product undergoes a rigorous quality check before it reaches our inventory and your hands." />
             </div>
             <div className={styles.card}>
               <div className={styles.iconWrapper}><Headset size={32} /></div>
-              <EditableText tag="h3" id="wd3_title" def="Reliable Service" />
-              <EditableText id="wd3_desc" def="Our dedicated support team is always ready to assist you with any inquiries or order updates." />
+              <EditableText {...tProps} tag="h3" id="wd3_title" def="Reliable Service" />
+              <EditableText {...tProps} id="wd3_desc" def="Our dedicated support team is always ready to assist you with any inquiries or order updates." />
             </div>
           </div>
         </div>

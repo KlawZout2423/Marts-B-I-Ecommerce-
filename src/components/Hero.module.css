@@ -212,7 +212,7 @@
   aspect-ratio: 1;
   border-radius: 50%;
   padding: 6px;
-  background: linear-gradient(45deg, var(--primary), #a855f7, #6366f1, var(--primary));
+  background: linear-gradient(45deg, var(--primary), #3B82F6, #60A5FA, var(--primary));
   background-size: 300% 300%;
   animation: gradientShift 8s ease infinite, pulseGlow 4s ease-in-out infinite;
   display: flex;

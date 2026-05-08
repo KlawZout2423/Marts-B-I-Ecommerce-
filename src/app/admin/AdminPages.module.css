@@ -43,6 +43,14 @@
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   overflow: hidden;
+  transition: box-shadow 0.25s ease;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.tableCard:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
 }
 
 .tableToolbar {
@@ -146,6 +154,14 @@
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 24px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+}
+
+.kpiCard:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
 }
 
 .kpiTitle {
@@ -357,25 +373,62 @@
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+.tableCard {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
   .pageHeader {
     flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
+    gap: 12px;
+    margin-bottom: 20px;
   }
-  
+
+  .pageHeader h1 {
+    font-size: 22px;
+  }
+
   .tableToolbar {
     flex-direction: column;
     align-items: stretch;
-    gap: 16px;
+    gap: 12px;
+    padding: 12px 16px;
   }
   
   .searchBar {
     width: 100%;
   }
   
+  .tableCard {
+    border-radius: 8px;
+  }
+
+  .tableWrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .table {
+    min-width: 480px;
+  }
+
+  .table th {
+    padding: 10px 12px;
+    font-size: 11px;
+  }
+
+  .table td {
+    padding: 12px 12px;
+    font-size: 13px;
+  }
+
   .formGrid {
     grid-template-columns: 1fr;
   }
@@ -387,5 +440,32 @@
   
   .uploadZone {
     padding: 24px;
+  }
+
+  .kpiSmall {
+    display: none;
+  }
+
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .kpiCard {
+    padding: 16px;
+  }
+
+  .kpiValue {
+    font-size: 22px;
+  }
+
+  .formSection {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .table {
+    min-width: 380px;
   }
 }

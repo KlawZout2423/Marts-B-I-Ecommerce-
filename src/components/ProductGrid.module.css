@@ -1,6 +1,24 @@
 .section {
   padding: 64px 0;
   background: var(--bg-main);
+  transition: background 0.3s ease;
+}
+
+.newArrivalsSection {
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.newArrivalsSection::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #0047AB, transparent);
+  opacity: 0.3;
 }
 
 /* ── Section Header ──────────── */
@@ -24,8 +42,27 @@
   white-space: nowrap;
 }
 
+.titleAddBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 71, 171, 0.2);
+}
+
+.titleAddBtn:hover {
+  transform: scale(1.1);
+  background: var(--primary-dark);
+}
+
 /* ── Default grid (4-col, used for homepage) ── */
-.grid, .carousel {
+.grid, .carousel, .carouselContainer {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
@@ -85,16 +122,21 @@
 }
 
 @media (max-width: 768px) {
-  /* Carousel behavior ONLY on mobile */
+  .carouselContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 0 -15px;
+  }
+
+  /* Each independent scrolling row */
   .carousel {
     display: flex !important;
     overflow-x: auto;
-    scroll-snap-type: x mandatory;
+    scroll-snap-type: x proximity;
+    overscroll-behavior-x: contain;
     gap: 12px;
-    padding: 10px 0 40px;
-    margin: 0 -15px; 
-    padding-left: 15px;
-    padding-right: 15px;
+    padding: 10px 15px 15px;
     scrollbar-width: none; 
     align-items: stretch;
   }
@@ -103,9 +145,9 @@
     display: none;
   }
 
-  .carousel > div {
-    width: 160px; 
-    min-width: 160px;
+  .carouselItem, .carousel > div {
+    width: 140px; /* More compact cards for 2-row layout */
+    min-width: 140px;
     scroll-snap-align: start;
     flex-shrink: 0;
     display: flex;
@@ -131,8 +173,8 @@
 
 .addCard:hover {
   background: #f8fafc;
-  border-color: #0ea5e9;
-  color: #0ea5e9;
+  border-color: #0047AB;
+  color: #0047AB;
   transform: translateY(-4px);
 }
 
@@ -150,8 +192,8 @@
 }
 
 .addCard:hover .plusIcon {
-  border-color: #0ea5e9;
-  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.2);
+  border-color: #0047AB;
+  box-shadow: 0 8px 24px rgba(0, 71, 171, 0.2);
 }
 
 /* ── Quick Add Modal ─────── */
@@ -239,8 +281,8 @@
 }
 
 .inputGroup input:focus {
-  border-color: #0ea5e9;
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+  border-color: #0047AB;
+  box-shadow: 0 0 0 3px rgba(0, 71, 171, 0.1);
 }
 
 .badgeSelection {
@@ -268,8 +310,8 @@
 }
 
 .tagBtnActive {
-  background: #0ea5e9;
-  border-color: #0ea5e9;
+  background: #0047AB;
+  border-color: #0047AB;
   color: white;
 }
 
@@ -295,7 +337,7 @@
   padding: 12px;
   border-radius: 12px;
   border: none;
-  background: #0f172a;
+  background: #0047AB;
   color: white;
   font-weight: 700;
   cursor: pointer;

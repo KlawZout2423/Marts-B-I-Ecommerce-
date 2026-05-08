@@ -7,13 +7,29 @@ export async function GET() {
       orderBy: { createdAt: 'desc' }
     });
     
-    // Parse JSON strings back to arrays/objects
-    const parsedProducts = products.map(p => ({
-      ...p,
-      placements: JSON.parse(p.placements || "[]"),
-      gallery: JSON.parse(p.gallery || "[]"),
-      attributes: JSON.parse(p.attributes || "{}")
-    }));
+    // Parse JSON strings back to arrays/objects SAFELY
+    const parsedProducts = products.map(p => {
+      const safeParse = (str: any, fallback: any) => {
+        if (!str) return fallback;
+        if (typeof str !== 'string') return str;
+        try {
+          if (str.startsWith("[") || str.startsWith("{")) {
+            return JSON.parse(str);
+          }
+          // Handle comma-separated strings
+          return str.split(",").map(s => s.trim());
+        } catch (e) {
+          return fallback;
+        }
+      };
+
+      return {
+        ...p,
+        placements: safeParse(p.placements, []),
+        gallery: safeParse(p.gallery, []),
+        attributes: safeParse(p.attributes, {})
+      };
+    });
 
     return NextResponse.json(parsedProducts);
   } catch (error) {
@@ -25,13 +41,13 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { id, name, price, stock, image, placements, category } = body;
+    const { name, price, stock, image, placements, category, sku } = body;
 
     const product = await prisma.product.create({
       data: {
         name,
         slug: name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + '-' + Math.random().toString(36).substr(2, 5),
-        sku: id || `SKU-${Date.now()}`,
+        sku: sku || `SKU-${Date.now()}`,
         price: price.toString(),
         stock: parseInt(stock) || 0,
         status: "active",
@@ -41,12 +57,7 @@ export async function POST(request: Request) {
       }
     });
 
-    return NextResponse.json({
-      ...product,
-      placements: JSON.parse(product.placements || "[]"),
-      gallery: JSON.parse(product.gallery || "[]"),
-      attributes: JSON.parse(product.attributes || "{}")
-    });
+    return NextResponse.json(product);
   } catch (error) {
     console.error("Failed to create product:", error);
     return NextResponse.json({ error: "Failed to create product" }, { status: 500 });

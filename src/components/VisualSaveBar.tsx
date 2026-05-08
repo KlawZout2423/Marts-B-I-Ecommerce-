@@ -1,7 +1,7 @@
 "use client";
 
 import { useEditMode } from "@/context/EditModeContext";
-import { Save, Edit3, Eye, X } from "lucide-react";
+import { Save, Edit3, Eye, X, LayoutDashboard, LogOut } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { usePathname, useRouter } from "next/navigation";
@@ -18,13 +18,16 @@ export default function VisualSaveBar() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // Collect all changes
+      const dataToSave = {
+        route: pathname.startsWith('/admin') ? (activePage || '/') : pathname,
+        blocks: JSON.stringify(pageBlocks.map(({ icon, ...rest }) => rest))
+      };
+
       const res = await fetch("/api/content", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          route: pathname.startsWith('/admin') ? (activePage || '/') : pathname, 
-          blocks: JSON.stringify(pageBlocks.map(({ icon, ...rest }) => rest)) 
-        }),
+        body: JSON.stringify(dataToSave),
       });
       
       if (res.ok) {
@@ -41,7 +44,7 @@ export default function VisualSaveBar() {
     }
   };
 
-  if (pathname.startsWith('/admin')) return null;
+  if (pathname.startsWith('/admin') || pathname === '/login' || pathname === '/signup') return null;
 
   return (
     <>
@@ -137,20 +140,49 @@ export default function VisualSaveBar() {
             <button 
               onClick={() => {
                 toggleEditMode();
+                router.push("/admin");
+              }}
+              style={{
+                background: 'rgba(255,255,255,0.1)',
+                color: 'white',
+                border: 'none',
+                padding: '10px 16px',
+                borderRadius: '100px',
+                fontWeight: 600,
+                fontSize: '14px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+              title="Dashboard"
+            >
+              <LayoutDashboard size={16} />
+              <span className="btn-text">Dashboard</span>
+            </button>
+
+            <button 
+              onClick={() => {
+                toggleEditMode();
                 router.push("/admin/content");
               }}
               style={{
                 background: 'rgba(255,255,255,0.1)',
                 color: 'white',
                 border: 'none',
-                padding: '10px 20px',
+                padding: '10px 16px',
                 borderRadius: '100px',
                 fontWeight: 600,
                 fontSize: '14px',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
               }}
+              title="Exit"
             >
-              Exit
+              <LogOut size={16} />
+              <span className="btn-text">Exit</span>
             </button>
           </div>
         </div>
@@ -201,7 +233,7 @@ export default function VisualSaveBar() {
           .page-switcher {
             display: none;
           }
-          .publish-btn-text {
+          .publish-btn-text, .btn-text {
             display: none;
           }
         }
