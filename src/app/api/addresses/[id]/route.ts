@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   const session = await authClient.getSession({
     fetchOptions: {
@@ -17,7 +17,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } = params;
+  const { id } = await context.params;
 
   // Verify ownership
   const address = await prisma.address.findUnique({
@@ -37,7 +37,7 @@ export async function DELETE(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   const session = await authClient.getSession({
     fetchOptions: {
@@ -49,7 +49,7 @@ export async function PATCH(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } = params;
+  const { id } = await context.params;
   const body = await req.json();
   const { isDefault, ...rest } = body;
 

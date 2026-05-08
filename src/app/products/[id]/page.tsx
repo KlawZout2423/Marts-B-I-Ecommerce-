@@ -28,6 +28,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     rating: 4.5,
     placements: JSON.parse(dbProduct.placements || "[]"),
     image: dbProduct.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80",
+    createdAt: dbProduct.createdAt.toISOString(),
+    updatedAt: dbProduct.updatedAt.toISOString(),
   };
 
   return (

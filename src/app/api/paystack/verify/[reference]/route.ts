@@ -3,9 +3,9 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: Request,
-  { params }: { params: { reference: string } }
+  context: { params: Promise<{ reference: string }> }
 ) {
-  const { reference } = params;
+  const { reference } = await context.params;
 
   if (!reference) {
     return NextResponse.json({ error: "Reference is required" }, { status: 400 });
