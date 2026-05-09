@@ -33,9 +33,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [pathname]);
 
   useEffect(() => {
-    // Skip auth check if we are on the admin login page itself
-    if (pathname === "/admin/login") return;
-
     let redirectTimer: NodeJS.Timeout;
 
     // Only run the check once isPending is fully resolved
@@ -45,8 +42,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         redirectTimer = setTimeout(async () => {
           const freshSession = await authClient.getSession();
           if (!freshSession?.data?.user) {
-             console.log("No session found after retry, redirecting to admin login");
-             router.replace("/admin/login");
+             console.log("No session found after retry, redirecting to login");
+             router.replace("/login");
           }
         }, 1000);
       }
@@ -54,11 +51,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     return () => clearTimeout(redirectTimer);
   }, [session, isPending, router, pathname]);
-
-  // If we are on the admin login page, just render the login page without the sidebar
-  if (pathname === "/admin/login") {
-    return <>{children}</>;
-  }
 
   // Show loading while session is being fetched
   if (isPending) {
@@ -92,8 +84,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           You are logged in as <strong>{session.user.email}</strong>, but you do not have administrative privileges.
         </p>
         <div style={{ display: "flex", gap: "12px" }}>
-          <button 
-            onClick={() => authClient.signOut().then(() => router.push("/admin/login"))}
+          <button
+            onClick={() => authClient.signOut().then(() => router.push("/login"))}
             style={{ padding: "10px 20px", background: "#0f172a", color: "white", borderRadius: "8px", fontWeight: 600, border: "none", cursor: "pointer" }}
           >
             Sign Out
