@@ -9,7 +9,25 @@ import { useStore } from '@/context/StoreContext';
 import { toast } from 'sonner';
 import { authClient } from "@/lib/auth-client";
 import { useCart } from '@/context/CartContext';
-import { usePaystackPayment } from 'react-paystack';
+import Script from 'next/script';
+// Dynamic script loader for Paystack to avoid React 19 SSR issues
+const loadPaystackScript = () => {
+  return new Promise((resolve, reject) => {
+    // @ts-ignore
+    if (window.PaystackPop) {
+      // @ts-ignore
+      resolve(window.PaystackPop);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://js.paystack.co/v1/inline.js";
+    script.async = true;
+    // @ts-ignore
+    script.onload = () => resolve(window.PaystackPop);
+    script.onerror = () => reject(new Error("Failed to load Paystack script"));
+    document.body.appendChild(script);
+  });
+};
 
 export default function CheckoutClient() {
   const { data: session, isPending: loading } = authClient.useSession();
@@ -52,8 +70,6 @@ export default function CheckoutClient() {
       ]
     }
   };
-
-  const initializePayment = usePaystackPayment(config);
 
   useEffect(() => {
     if (session?.user) {
@@ -118,8 +134,6 @@ export default function CheckoutClient() {
       if (!res.ok) throw new Error(orderData.error || "Order failed");
 
       // 2. Trigger Paystack Payment
-      // Note: we can't easily update reference in config with the 'react-paystack' hook after init,
-      // so we use the direct PaystackPop global for maximum control over the reference.
       const paymentConfig = {
         ...config,
         reference: `${orderData.orderNumber}_${Date.now()}`,
@@ -130,11 +144,23 @@ export default function CheckoutClient() {
         }
       };
 
+      // Ensure script is loaded before calling setup
+      await loadPaystackScript();
+
       // @ts-ignore
       const handler = window.PaystackPop.setup({
-        ...paymentConfig,
-        callback: onSuccess,
-        onClose: onClose
+        key: paymentConfig.publicKey,
+        email: paymentConfig.email,
+        amount: paymentConfig.amount,
+        currency: paymentConfig.currency,
+        ref: paymentConfig.reference,
+        metadata: paymentConfig.metadata,
+        callback: function(response: any) {
+          onSuccess(response);
+        },
+        onClose: function() {
+          onClose();
+        }
       });
       handler.openIframe();
 
