@@ -11,6 +11,7 @@ export type Product = {
   image: string;
   category: string;
   placements: ProductPlacement[];
+  salePrice?: string;
 };
 
 export const INITIAL_PRODUCTS: Product[] = [

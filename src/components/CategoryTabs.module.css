@@ -72,6 +72,18 @@
   color: #1e293b;
 }
 
+.activeTab .iconBox {
+  background: #0047AB !important;
+  border-color: #0047AB !important;
+  color: #ffffff !important;
+}
+
+.activeTab .name {
+  color: #0047AB !important;
+  font-weight: 700 !important;
+}
+
+
 @media (max-width: 1024px) {
   .tabsWrapper {
     justify-content: flex-start;
@@ -103,10 +115,86 @@
   border-radius: 4px;
 }
 
-/* Only show indicators on smaller screens where horizontal scrolling happens */
-@media (max-width: 1100px) {
+/* Only show indicators on tablet sizes where horizontal scrolling happens, hide on desktop/mobile */
+@media (max-width: 1100px) and (min-width: 769px) {
   .indicators {
     opacity: 1;
   }
 }
+
+@media (max-width: 768px) {
+  .indicators {
+    display: none !important;
+  }
+
+  .section {
+    padding: 8px 0;
+    border-bottom: none;
+  }
+
+  /* ── Temu-style compact horizontal pill chips ── */
+  .tabsWrapper {
+    gap: 8px;
+    padding: 4px 0;
+    justify-content: flex-start;
+  }
+
+  .tab {
+    flex-direction: row;
+    gap: 6px;
+    min-width: unset;
+    padding: 6px 12px;
+    background: #f1f5f9;
+    border-radius: 100px;
+    border: 1px solid #e2e8f0;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .tab:hover {
+    background: #E0EFFF;
+    border-color: #0047AB;
+  }
+
+  /* Hide the big square icon box — show only a tiny inline icon */
+  .iconBox {
+    width: 16px;
+    height: 16px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    color: #0047AB;
+  }
+
+  .tab:hover .iconBox {
+    transform: none;
+    box-shadow: none;
+    background: transparent;
+    border: none;
+  }
+
+  .name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #334155;
+  }
+
+  .tab:hover .name {
+    color: #0047AB;
+  }
+
+  .activeTab {
+    background: #0047AB !important;
+    border-color: #0047AB !important;
+  }
+
+  .activeTab .name {
+    color: #ffffff !important;
+  }
+
+  .activeTab .iconBox {
+    color: #ffffff !important;
+  }
+}
+
 

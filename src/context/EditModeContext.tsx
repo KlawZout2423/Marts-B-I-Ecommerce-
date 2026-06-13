@@ -31,6 +31,8 @@ type EditModeContextType = {
   updateBlockContent: (id: string, content: any) => void;
   activePage: string;
   setActivePage: (page: string) => void;
+  globalBanner: { text: string };
+  setGlobalBanner: (banner: { text: string }) => void;
 };
 
 const EditModeContext = createContext<EditModeContextType | undefined>(undefined);
@@ -74,6 +76,28 @@ export function EditModeProvider({ children }: { children: React.ReactNode }) {
     "/contact": []
   });
   const [activePage, setActivePage] = useState("/");
+
+  const [globalBanner, setGlobalBanner] = useState<{ text: string }>({
+    text: "Free Shipping on Orders Over $50"
+  });
+
+  useEffect(() => {
+    const fetchGlobalBanner = async () => {
+      try {
+        const res = await fetch("/api/content?route=global_banner");
+        const data = await res.json();
+        if (data && data.blocks && data.blocks.length > 0) {
+          const bannerBlock = data.blocks[0];
+          if (bannerBlock && bannerBlock.content && bannerBlock.content.text) {
+            setGlobalBanner({ text: bannerBlock.content.text });
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch global banner content:", err);
+      }
+    };
+    fetchGlobalBanner();
+  }, []);
 
   const pageBlocks = allPageBlocks[activePage] || [];
 
@@ -134,7 +158,9 @@ export function EditModeProvider({ children }: { children: React.ReactNode }) {
       addBlock,
       updateBlockContent,
       activePage,
-      setActivePage
+      setActivePage,
+      globalBanner,
+      setGlobalBanner
     }}>
       {children}
     </EditModeContext.Provider>

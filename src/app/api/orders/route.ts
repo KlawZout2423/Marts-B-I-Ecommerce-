@@ -39,6 +39,8 @@ export async function POST(request: Request) {
       address, 
       city, 
       zipCode, 
+      latitude,
+      longitude,
       items 
     } = data;
 
@@ -61,7 +63,8 @@ export async function POST(request: Request) {
     // Create Order and Items using Raw SQL for maximum reliability
     const orderId = crypto.randomUUID();
     const fullName = `${firstName} ${lastName}`;
-    const shippingAddress = `${address}, ${city}, ${zipCode}`;
+    const gpsString = latitude && longitude ? ` (GPS: ${latitude}, ${longitude})` : "";
+    const shippingAddress = `${address}, ${city}, ${zipCode}${gpsString}`;
 
     await prisma.$executeRaw`
       INSERT INTO "order" (

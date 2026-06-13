@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
 import { Product } from "@/data/products";
 import ProductCard from "./ProductCard";
 import { useEditMode } from "@/context/EditModeContext";
 import { useInventory } from "@/context/InventoryContext";
+import { usePathname } from "next/navigation";
 import { Plus, X, UploadCloud, Check } from "lucide-react";
 import styles from "./ProductGrid.module.css";
 
@@ -18,6 +19,8 @@ interface ProductGridProps {
   variant?: "masonry" | "grid";
   isCarouselOnMobile?: boolean;
   rows?: number;
+  onQuickView?: (product: Product) => void;
+  showPromoCard?: boolean;
 }
 
 export default function ProductGrid({
@@ -29,10 +32,13 @@ export default function ProductGrid({
   emptyMessage = "No products found.",
   variant = "masonry",
   isCarouselOnMobile = false,
-  rows = 1
+  rows = 1,
+  onQuickView,
+  showPromoCard = false
 }: ProductGridProps) {
   const [isMobile, setIsMobile] = useState(false);
   const { isEditMode } = useEditMode();
+  const pathname = usePathname();
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -60,28 +66,45 @@ export default function ProductGrid({
       let filtered = data;
 
       if (filterTag) {
-        filtered = data.filter((p: any) => {
-          // Priority 1: Check the placements array (from DB)
-          if (p.placements && Array.isArray(p.placements)) {
-            if (p.placements.includes(filterTag)) return true;
-            // Handle "new" vs "new_arrivals" mapping
-            if (filterTag === "new" && p.placements.includes("new_arrivals")) return true;
-            if (filterTag === "new_arrivals" && p.placements.includes("new")) return true;
-          }
+        if (filterTag === "new" || filterTag === "new_arrivals") {
+          // 30-Day Auto-Expiry Logic matching ShopClient:
+          const taggedNew = data.filter(p => {
+            try {
+              const placements = p.placements || [];
+              if (!placements.includes("new_arrivals") && !placements.includes("new")) return false;
+              
+              const createdDate = new Date(p.createdAt);
+              const diffDays = Math.ceil(Math.abs(Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
+              
+              return diffDays <= 30; 
+            } catch { return false; }
+          });
 
-          // Priority 2: Fallback to legacy hardcoded logic
-          if (filterTag === "bestseller") {
-            return (p.rating && p.rating >= 4.7) || p.badge === "Best Seller";
-          } else if (filterTag === "new" || filterTag === "new_arrivals") {
-            return p.badge === "New" || p.id === "2" || p.id === "3";
-          } else if (filterTag === "featured") {
-            return p.badge === "Best Seller" || p.id === "4";
-          } else if (filterTag === "hot_sale") {
-            return p.originalPrice || p.id === "1";
+          if (taggedNew.length > 0) {
+            filtered = taggedNew;
+          } else {
+            // Fallback: sort by date desc
+            filtered = [...data].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
           }
-          
-          return true;
-        });
+        } else {
+          filtered = data.filter((p: any) => {
+            // Priority 1: Check the placements array (from DB)
+            if (p.placements && Array.isArray(p.placements)) {
+              if (p.placements.includes(filterTag)) return true;
+            }
+
+            // Priority 2: Fallback to legacy hardcoded logic
+            if (filterTag === "bestseller") {
+              return (p.rating && p.rating >= 4.7) || p.badge === "Best Seller";
+            } else if (filterTag === "featured") {
+              return p.badge === "Best Seller" || p.id === "4";
+            } else if (filterTag === "hot_sale") {
+              return p.originalPrice || p.id === "1";
+            }
+            
+            return true;
+          });
+        }
       }
 
       if (limit) filtered = filtered.slice(0, limit);
@@ -146,13 +169,11 @@ export default function ProductGrid({
         <div className={`${styles.container} container`}>
           {title && (
             <div className={styles.header}>
-              <div className={styles.divider} />
               <h2 className={styles.title}>{title}</h2>
-              <div className={styles.divider} />
             </div>
           )}
           <div className={styles.grid}>
-            {[1, 2, 3, 4].map((i) => (
+            {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className={styles.skeleton} />
             ))}
           </div>
@@ -166,18 +187,29 @@ export default function ProductGrid({
       <div className={`${styles.container} container`}>
         {title && (
           <div className={styles.header}>
-            <div className={styles.divider} />
-            <h2 className={styles.title}>{title}</h2>
-            {isEditMode && (
-              <button 
-                className={styles.titleAddBtn} 
-                onClick={() => setIsAddModalOpen(true)}
-                title="Add product to this section"
-              >
-                <Plus size={20} />
-              </button>
-            )}
-            <div className={styles.divider} />
+            <div className={styles.headerLeft}>
+              <h2 className={styles.title}>{title}</h2>
+              {filterTag && (
+                <span className={styles.titleTag}>
+                  {filterTag === "new" || filterTag === "new_arrivals" ? "✦ Just dropped" :
+                   filterTag === "bestseller" ? "✦ Top picks" :
+                   filterTag === "hot_sale" ? "✦ Limited time" :
+                   filterTag === "featured" ? "✦ Curated for you" : ""}
+                </span>
+              )}
+            </div>
+            <div className={styles.headerRight}>
+              {isEditMode && (
+                <button
+                  className={styles.titleAddBtn}
+                  onClick={() => setIsAddModalOpen(true)}
+                  title="Add product to this section"
+                >
+                  <Plus size={20} />
+                </button>
+              )}
+              {/* View all link removed to keep everything on the homepage like Temu */}
+            </div>
           </div>
         )}
 
@@ -186,23 +218,39 @@ export default function ProductGrid({
             ${isCarouselOnMobile ? styles.carouselContainer : styles.grid} 
             ${variant === "grid" && !isCarouselOnMobile ? styles.standardGrid : ""} 
           `}>
-            {isCarouselOnMobile && rows > 1 && isMobile ? (
-              Array.from({ length: rows }).map((_, rowIndex) => {
-                const rowProducts = products.filter((_, idx) => idx % rows === rowIndex);
-                return (
-                  <div key={rowIndex} className={styles.carousel}>
-                    {rowProducts.map((product, index) => (
-                      <ProductCard key={product.id} product={product} index={index} />
-                    ))}
+            {isCarouselOnMobile && isMobile ? (
+              <div 
+                className={styles.carousel}
+                style={{
+                  gridTemplateRows: `repeat(${rows}, minmax(max-content, 1fr))`,
+                  gridAutoFlow: "column"
+                }}
+              >
+                {products.map((product, index) => (
+                  <div key={product.id} className={styles.carouselItem}>
+                    <ProductCard product={product} index={index} onQuickView={onQuickView} />
                   </div>
-                );
-              })
+                ))}
+              </div>
             ) : (
               <>
                 {products.map((product, index) => (
-                  <div key={product.id} className={isCarouselOnMobile && isMobile ? styles.carouselItem : ""}>
-                    <ProductCard product={product} index={index} />
-                  </div>
+                  <Fragment key={product.id}>
+                    {index === 3 && showPromoCard && (
+                      <div className={styles.promoGridCard}>
+                        <div className={styles.promoCardContent}>
+                          <span className={styles.promoTag}>LIMITED DROP</span>
+                          <h3>Direct Sourcing, Unmatched Value</h3>
+                          <p>We cut out intermediate importers to save you up to 45% on global collections.</p>
+                          <div className={styles.promoCode}>
+                            <span>Use Code:</span>
+                            <strong>MARTS10</strong>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    <ProductCard product={product} index={index} onQuickView={onQuickView} />
+                  </Fragment>
                 ))}
               </>
             )}

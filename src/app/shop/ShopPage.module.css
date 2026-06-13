@@ -190,7 +190,15 @@
   border-color: #cbd5e1;
 }
 
-.stickyActionBar, .mobileCategoryScroll {
+.stickyActionBar {
+  display: none; /* now replaced by mobileTopBar */
+}
+
+.mobileTopBar {
+  display: none; /* Hidden on desktop */
+}
+
+.mobileCategoryScroll {
   display: none; /* Hidden on desktop */
 }
 
@@ -385,12 +393,85 @@
     display: none; /* Hide the old header on mobile */
   }
 
+  /* ── Sticky Temu-style top bar ── */
+  .mobileTopBar {
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 60px; /* height of mobile navbar */
+    z-index: 200;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0 0 0 12px;
+    gap: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .mobileCategoryScroll {
+    display: flex;
+    flex: 1;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 6px;
+    padding: 8px 0;
+    align-items: center;
+  }
+
+  .mobileCategoryScroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobileCatItem {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    border-radius: 100px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #475569;
+    white-space: nowrap;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.18s ease;
+  }
+
+  .activeMobileCat {
+    background: #0047AB;
+    color: #ffffff;
+    border-color: #0047AB;
+  }
+
+  .mobileFilterBtn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: #0047AB;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    border-left: 1px solid #0036a3;
+    height: 100%;
+    min-height: 42px;
+    flex-shrink: 0;
+  }
+
   .shopWrapper {
-    padding-top: 130px; /* Account for navbar + spacer */
+    padding-top: 110px; /* navbar (60px) + mobileTopBar (~42px) + breathing room */
   }
 
   .stickyActionBar {
-    top: 180px; /* Mobile Navbar height (accounts for search row) */
+    display: none !important;
+  }
+
+  .topBar {
+    display: none; /* hide breadcrumbs on mobile */
   }
 }
 
@@ -398,3 +479,411 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+/* Active Filters styling */
+.activeFiltersRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 2rem;
+  margin: 0 -2rem 1.5rem;
+  background: #f8fafc;
+  border-bottom: 1px solid #f1f5f9;
+  flex-wrap: wrap;
+}
+
+.activeFiltersLabel {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.activeFiltersList {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filterPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 99px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.filterPill button {
+  background: none;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0;
+}
+
+.filterPill button:hover {
+  color: #ef4444;
+}
+
+.clearAllBtn {
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #0047AB;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.clearAllBtn:hover {
+  text-decoration: underline;
+}
+
+/* Quick View Modal styling */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.25s ease;
+}
+
+.modalContent {
+  width: 100%;
+  max-width: 900px;
+  background: white;
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #f8fafc;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.closeBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  transform: rotate(90deg);
+}
+
+.modalGrid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.2fr;
+}
+
+.modalImageContainer {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modalSaleBadge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: #ef4444;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modalInfoContainer {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-height: 550px;
+  overflow-y: auto;
+}
+
+.modalCategory {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #0047AB;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.modalTitle {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+.modalRatingRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.modalStars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #fef9c3;
+  color: #ca8a04;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.modalReviewsCount {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.modalPriceRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.modalCurrentPrice {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.modalOldPrice {
+  font-size: 1.15rem;
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+.modalDiscountPercent {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.modalDescription {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #475569;
+  margin-bottom: 24px;
+}
+
+.modalOptionsSection {
+  margin-bottom: 24px;
+}
+
+.modalSectionLabel {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+.modalOptionsList {
+  display: flex;
+  gap: 10px;
+}
+
+.modalOptionBtn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modalOptionBtn:hover {
+  border-color: #cbd5e1;
+}
+
+.modalOptionBtnActive {
+  border-color: #0047AB;
+  background: rgba(0, 71, 171, 0.04);
+  color: #0047AB;
+}
+
+.modalActionsRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.modalQtyControls {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 48px;
+}
+
+.qtyBtn {
+  width: 40px;
+  height: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #475569;
+  transition: background 0.2s;
+}
+
+.qtyBtn:hover {
+  background: #f8fafc;
+}
+
+.modalQty {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  min-width: 30px;
+  text-align: center;
+}
+
+.modalAddBtn {
+  flex: 1;
+  height: 48px;
+  background: #0047AB;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modalAddBtn:hover {
+  background: #0036a3;
+  transform: translateY(-1px);
+}
+
+.modalAddBtnSuccess {
+  background: #22c55e !important;
+}
+
+.modalWishlistBtn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  background: white;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modalWishlistBtn:hover {
+  border-color: #cbd5e1;
+  color: #ef4444;
+}
+
+.modalWishlistActive {
+  color: #ef4444;
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+.modalFooterLink {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 16px;
+}
+
+.viewFullDetailsLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0047AB;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.viewFullDetailsLink:hover {
+  color: #0036a3;
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .modalContent {
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modalGrid {
+    grid-template-columns: 1fr;
+  }
+  .modalInfoContainer {
+    padding: 24px;
+    max-height: none;
+    overflow-y: visible;
+  }
+  .modalTitle {
+    font-size: 1.5rem;
+  }
+}
+

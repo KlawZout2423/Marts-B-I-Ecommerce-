@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { usePathname, useRouter } from "next/navigation";
 
 export default function VisualSaveBar() {
-  const { isEditMode, toggleEditMode, pageBlocks, canEdit, activePage } = useEditMode();
+  const { isEditMode, toggleEditMode, pageBlocks, canEdit, activePage, globalBanner } = useEditMode();
   const [isSaving, setIsSaving] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
@@ -18,7 +18,7 @@ export default function VisualSaveBar() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Collect all changes
+      // Collect all page changes
       const dataToSave = {
         route: pathname.startsWith('/admin') ? (activePage || '/') : pathname,
         blocks: JSON.stringify(pageBlocks.map(({ icon, ...rest }) => rest))
@@ -30,14 +30,38 @@ export default function VisualSaveBar() {
         body: JSON.stringify(dataToSave),
       });
       
-      if (res.ok) {
-        toast.success("All changes published successfully!");
-        // Force a reload after a short delay to pull fresh data from DB
-        setTimeout(() => window.location.reload(), 1000);
-      } else {
-        toast.error("Failed to publish changes.");
+      if (!res.ok) {
+        throw new Error("Failed to publish page content changes.");
       }
+
+      // Collect global banner changes
+      const globalBannerBlock = [
+        {
+          id: "global_promo_banner",
+          type: "banner",
+          title: "Promo Banner",
+          content: globalBanner
+        }
+      ];
+
+      const resBanner = await fetch("/api/content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          route: "global_banner",
+          blocks: JSON.stringify(globalBannerBlock)
+        }),
+      });
+
+      if (!resBanner.ok) {
+        throw new Error("Failed to publish global banner changes.");
+      }
+
+      toast.success("All changes published successfully!");
+      // Force a reload after a short delay to pull fresh data from DB
+      setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
+      console.error(error);
       toast.error("An error occurred while saving.");
     } finally {
       setIsSaving(false);

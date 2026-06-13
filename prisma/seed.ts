@@ -57,6 +57,7 @@ async function main() {
       stock: 5,
       category: "Living Room",
       image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80",
+      gallery: ["https://images.unsplash.com/photo-1567016432779-094069958ea5?w=800&q=80"],
       placements: ["homepage", "bestseller"],
     },
     {
@@ -65,6 +66,7 @@ async function main() {
       stock: 12,
       category: "Living Room",
       image: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800&q=80",
+      gallery: ["https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&q=80"],
       placements: ["homepage"],
     },
     {
@@ -73,6 +75,7 @@ async function main() {
       stock: 8,
       category: "Office",
       image: "https://images.unsplash.com/photo-1505797149-43b007664a3d?w=800&q=80",
+      gallery: ["https://images.unsplash.com/photo-1592078615290-033ee584e267?w=800&q=80"],
       placements: ["homepage", "new_arrivals"],
     },
     {
@@ -81,6 +84,7 @@ async function main() {
       stock: 3,
       category: "Dining",
       image: "https://images.unsplash.com/photo-1577140917170-285929fb55b7?w=800&q=80",
+      gallery: ["https://images.unsplash.com/photo-1615066049590-600c62e4f8be?w=800&q=80"],
       placements: ["featured"],
     },
     {
@@ -89,6 +93,7 @@ async function main() {
       stock: 15,
       category: "Bedroom",
       image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=80",
+      gallery: ["https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80"],
       placements: ["hot_sale"],
     },
     {
@@ -97,6 +102,7 @@ async function main() {
       stock: 20,
       category: "Lighting",
       image: "https://images.unsplash.com/photo-1507473885765-e6ed657f9971?w=800&q=80",
+      gallery: ["https://images.unsplash.com/photo-1513506003901-1e6a35703b21?w=800&q=80"],
       placements: ["homepage", "new_arrivals"],
     },
   ];
@@ -110,6 +116,7 @@ async function main() {
         stock: p.stock,
         category: p.category,
         image: p.image,
+        gallery: JSON.stringify(p.gallery || []),
         placements: JSON.stringify(p.placements),
         status: "active",
       },
@@ -121,6 +128,7 @@ async function main() {
         stock: p.stock,
         category: p.category,
         image: p.image,
+        gallery: JSON.stringify(p.gallery || []),
         placements: JSON.stringify(p.placements),
         status: "active",
       },

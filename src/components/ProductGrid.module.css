@@ -21,25 +21,74 @@
   opacity: 0.3;
 }
 
-/* ── Section Header ──────────── */
+/* ── Section Header ───────────────── */
 .header {
   display: flex;
-  align-items: center;
-  gap: 28px;
-  margin-bottom: 40px;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-.divider {
-  flex: 1;
-  height: 1px;
-  background: var(--border);
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .title {
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 800;
   color: var(--text-main);
   white-space: nowrap;
+  border-left: 4px solid #0047AB;
+  padding-left: 12px;
+  line-height: 1.2;
+}
+
+.titleTag {
+  font-size: 11px;
+  font-weight: 600;
+  color: #0047AB;
+  padding-left: 16px;
+  letter-spacing: 0.03em;
+  opacity: 0.8;
+}
+
+.viewAll {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0047AB;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1.5px solid #0047AB;
+  padding: 6px 14px;
+  border-radius: 100px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.viewAll::after {
+  content: "→";
+  transition: transform 0.2s ease;
+}
+
+.viewAll:hover {
+  background: #0047AB;
+  color: white;
+}
+
+.viewAll:hover::after {
+  transform: translateX(4px);
 }
 
 .titleAddBtn {
@@ -61,16 +110,16 @@
   background: var(--primary-dark);
 }
 
-/* ── Default grid (4-col, used for homepage) ── */
+/* ── Default grid (5-col on desktop) ── */
 .grid, .carousel, .carouselContainer {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
 }
 
 /* ── Standard grid alias (shop page uses variant="grid") ── */
 .standardGrid {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
 }
 
 /* ── Skeleton loaders ────────── */
@@ -96,7 +145,15 @@
 }
 
 /* ── Responsive ─────────────── */
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
+  .grid,
+  .standardGrid,
+  .carousel {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1100px) {
   .grid,
   .standardGrid,
   .carousel {
@@ -109,7 +166,7 @@
   .standardGrid,
   .carousel {
     grid-template-columns: 1fr 1fr !important;
-    gap: 10px !important;
+    gap: 8px !important;
   }
 }
 
@@ -117,11 +174,36 @@
   .grid,
   .standardGrid {
     grid-template-columns: 1fr 1fr !important;
-    gap: 8px !important;
+    gap: 6px !important;
   }
 }
 
 @media (max-width: 768px) {
+  .section {
+    padding: 16px 0;
+  }
+
+  .header {
+    margin-bottom: 16px;
+    gap: 12px;
+  }
+
+  .title {
+    font-size: 18px;
+    border-left-width: 3px;
+    padding-left: 8px;
+  }
+
+  .titleTag {
+    font-size: 10px;
+    padding-left: 10px;
+  }
+
+  .viewAll {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
   .carouselContainer {
     display: flex;
     flex-direction: column;
@@ -131,7 +213,8 @@
 
   /* Each independent scrolling row */
   .carousel {
-    display: flex !important;
+    display: grid !important;
+    grid-auto-flow: column;
     overflow-x: auto;
     scroll-snap-type: x proximity;
     overscroll-behavior-x: contain;
@@ -351,6 +434,102 @@
 @media (max-width: 640px) {
   .addCard {
     min-height: 300px;
+  }
+}
+
+/* Shop Announcement Card inside product grid */
+.promoGridCard {
+  grid-column: span 1;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 30px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.promoGridCard::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 71, 171, 0.2) 0%, transparent 70%);
+  filter: blur(10px);
+}
+
+.promoCardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 2;
+}
+
+.promoTag {
+  align-self: flex-start;
+  background: rgba(0, 71, 171, 0.2);
+  border: 1px solid rgba(0, 71, 171, 0.4);
+  color: #60a5fa;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 100px;
+  letter-spacing: 0.05em;
+}
+
+.promoCardContent h3 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #ffffff;
+  margin: 0;
+}
+
+.promoCardContent p {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.promoCode {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  padding: 10px;
+  border-radius: 8px;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.promoCode span {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+
+.promoCode strong {
+  font-size: 1.1rem;
+  color: #60a5fa;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 900px) {
+  .promoGridCard {
+    min-height: 280px;
+    padding: 20px;
+    grid-column: span 1 !important;
   }
 }
 

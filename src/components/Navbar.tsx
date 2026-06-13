@@ -114,11 +114,17 @@ const Navbar = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+      const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+      if (isMobile) {
+        router.push(`/?search=${encodeURIComponent(searchQuery.trim())}`);
+      } else {
+        router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+      }
       setIsSearchOpen(false);
       setSearchQuery("");
     }
   };
+
 
   return (
     <>
@@ -266,7 +272,7 @@ const Navbar = () => {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               >
-                {navLinks.map((link, idx) => (
+                {navLinks.filter(link => !link.href.startsWith("/shop")).map((link, idx) => (
                     <motion.div
                       key={link.name}
                       initial={{ opacity: 0, x: -10 }}
@@ -282,6 +288,19 @@ const Navbar = () => {
                       </Link>
                     </motion.div>
                 ))}
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 + navLinks.filter(link => !link.href.startsWith("/shop")).length * 0.05 }}
+                >
+                  <Link
+                    href="/wishlist"
+                    className={`${styles.mobileNavLink} ${pathname === "/wishlist" ? styles.mobileActive : ""}`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Wishlist
+                  </Link>
+                </motion.div>
                 {isMounted && !session && (
                   <motion.div
                     initial={{ opacity: 0, x: -10 }}

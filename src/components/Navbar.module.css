@@ -510,7 +510,7 @@
     border-color: white;
   }
   .headerSpacer {
-    height: 180px; /* Accounts for Promo (36) + Top Nav (~60) + Search Row (~60) */
+    height: 224px; /* Promo (36) + Nav row (~60) + Search row (~60) + Category strip (~44) + gap (~24) */
   }
 }
 

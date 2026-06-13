@@ -21,9 +21,20 @@ import {
   ArrowDownWideNarrow,
   Clock,
   Layout,
-  X
+  X,
+  ShoppingCart,
+  Heart,
+  Star,
+  Shield,
+  Eye
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { useCart } from "@/context/CartContext";
+import { useFavorites } from "@/context/FavoritesContext";
+import { useStore } from "@/context/StoreContext";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
 import styles from "./ShopPage.module.css";
 
 export default function ShopClient() {
@@ -38,6 +49,7 @@ export default function ShopClient() {
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   // Sync searchQuery with URL param when it changes
   useEffect(() => {
@@ -171,16 +183,44 @@ export default function ShopClient() {
   return (
     <main className={styles.page}>
       <Navbar />
+
+      {/* ── Temu-style Sticky Category + Filter Bar (Mobile Only) ── */}
+      <div className={styles.mobileTopBar}>
+        <div className={styles.mobileCategoryScroll}>
+          {categories.map((cat) => {
+            const Icon = cat.icon;
+            return (
+              <button
+                key={cat.name}
+                className={`${styles.mobileCatItem} ${activeCategory === cat.name ? styles.activeMobileCat : ""}`}
+                onClick={() => {
+                  setActiveCategory(cat.name);
+                  if (cat.name === "All") setSearchQuery("");
+                }}
+              >
+                <Icon size={14} /> {cat.name}
+              </button>
+            );
+          })}
+        </div>
+        <button
+          className={styles.mobileFilterBtn}
+          onClick={() => setIsSidebarOpen(true)}
+        >
+          <ArrowUpNarrowWide size={15} />
+          <span>Filter</span>
+        </button>
+      </div>
       
       <div className={styles.shopWrapper}>
         <div className={`container ${styles.shopContainer}`}>
           {/* Top Bar / Breadcrumbs */}
           <div className={styles.topBar}>
-            <h1 className={styles.pageTitle}>Shop App</h1>
+            <h1 className={styles.pageTitle}>Shop</h1>
             <nav className={styles.breadcrumbs}>
               <span>Home</span>
               <span className={styles.separator}>/</span>
-              <span className={styles.activeBreadcrumb}>Shop App</span>
+              <span className={styles.activeBreadcrumb}>Shop</span>
             </nav>
           </div>
 
@@ -198,9 +238,7 @@ export default function ShopClient() {
                         className={`${styles.filterItem} ${activeCategory === cat.name ? styles.activeFilter : ""}`}
                         onClick={() => {
                           setActiveCategory(cat.name);
-                          if (cat.name === "All") {
-                            setSearchQuery("");
-                          }
+                          if (cat.name === "All") setSearchQuery("");
                         }}
                       >
                         <Icon size={18} /> {cat.name}
@@ -228,7 +266,6 @@ export default function ShopClient() {
                 </div>
               </div>
 
-
               <div className={styles.filterSection}>
                 <h3 className={styles.sectionTitle}>By Gender</h3>
                 <div className={styles.filterList}>
@@ -247,40 +284,6 @@ export default function ShopClient() {
 
             {/* Content Area */}
             <div className={styles.contentArea}>
-              {/* 📱 Shopify-style Sticky Action Bar (Mobile Only) */}
-              <div className={styles.stickyActionBar}>
-                <div className={styles.activeFilters}>
-                  <span className={styles.resultCount}>{filteredProducts.length} Products</span>
-                </div>
-                <button 
-                  className={styles.mobileFilterBtn}
-                  onClick={() => setIsSidebarOpen(true)}
-                >
-                  <ArrowUpNarrowWide size={16} />
-                  <span>Filter & Sort</span>
-                </button>
-              </div>
-
-              {/* Mobile Category Scroll */}
-              <div className={styles.mobileCategoryScroll}>
-                {categories.map((cat) => {
-                  const Icon = cat.icon;
-                  return (
-                    <button
-                      key={cat.name}
-                      className={`${styles.mobileCatItem} ${activeCategory === cat.name ? styles.activeMobileCat : ""}`}
-                      onClick={() => {
-                        setActiveCategory(cat.name);
-                        if (cat.name === "All") {
-                          setSearchQuery("");
-                        }
-                      }}
-                    >
-                      <Icon size={16} /> {cat.name}
-                    </button>
-                  );
-                })}
-              </div>
 
               {/* Sidebar Drawer for Mobile */}
               {isSidebarOpen && (
@@ -291,21 +294,6 @@ export default function ShopClient() {
                       <button onClick={() => setIsSidebarOpen(false)}><X size={20} /></button>
                     </div>
                     <div className={styles.drawerBody}>
-                      {/* Reuse sidebar logic inside drawer for mobile */}
-                      <div className={styles.filterSection}>
-                        <h4 className={styles.drawerSubTitle}>Category</h4>
-                        <div className={styles.drawerGrid}>
-                          {categories.map(cat => (
-                            <button 
-                              key={cat.name}
-                              className={`${styles.drawerItem} ${activeCategory === cat.name ? styles.drawerItemActive : ""}`}
-                              onClick={() => setActiveCategory(cat.name)}
-                            >
-                              {cat.name}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
                       <div className={styles.filterSection}>
                         <h4 className={styles.drawerSubTitle}>Sort By</h4>
                         <div className={styles.drawerGrid}>
@@ -320,9 +308,23 @@ export default function ShopClient() {
                           ))}
                         </div>
                       </div>
+                      <div className={styles.filterSection}>
+                        <h4 className={styles.drawerSubTitle}>By Gender</h4>
+                        <div className={styles.drawerGrid}>
+                          {["Men", "Women", "Unisex"].map(gender => (
+                            <button
+                              key={gender}
+                              className={`${styles.drawerItem} ${activeCategory === gender ? styles.drawerItemActive : ""}`}
+                              onClick={() => setActiveCategory(gender)}
+                            >
+                              {gender}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                     <div className={styles.drawerFooter}>
-                      <button className={styles.applyBtn} onClick={() => setIsSidebarOpen(false)}>Apply Changes</button>
+                      <button className={styles.applyBtn} onClick={() => setIsSidebarOpen(false)}>Apply</button>
                     </div>
                   </div>
                 </div>
@@ -351,17 +353,194 @@ export default function ShopClient() {
                 </div>
               </div>
 
+              {/* Active Filters Row */}
+              {(activeCategory !== "All" || sortBy !== "newest" || searchQuery) && (
+                <div className={styles.activeFiltersRow}>
+                  <span className={styles.activeFiltersLabel}>Active Filters:</span>
+                  <div className={styles.activeFiltersList}>
+                    {activeCategory !== "All" && (
+                      <span className={styles.filterPill}>
+                        Category: {activeCategory}
+                        <button onClick={() => setActiveCategory("All")} aria-label="Remove category filter"><X size={12} /></button>
+                      </span>
+                    )}
+                    {sortBy !== "newest" && (
+                      <span className={styles.filterPill}>
+                        Sort: {sortOptions.find(o => o.id === sortBy)?.name || sortBy}
+                        <button onClick={() => setSortBy("newest")} aria-label="Remove sort filter"><X size={12} /></button>
+                      </span>
+                    )}
+                    {searchQuery && (
+                      <span className={styles.filterPill}>
+                        Search: "{searchQuery}"
+                        <button onClick={() => setSearchQuery("")} aria-label="Clear search query"><X size={12} /></button>
+                      </span>
+                    )}
+                    <button 
+                      className={styles.clearAllBtn}
+                      onClick={() => {
+                        setActiveCategory("All");
+                        setSortBy("newest");
+                        setSearchQuery("");
+                      }}
+                    >
+                      Clear All
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <ProductGrid 
                 products={filteredProducts}
                 isLoading={isLoading}
                 emptyMessage="No products match your search or filters."
+                onQuickView={setSelectedProduct}
+                showPromoCard={true}
               />
             </div>
           </div>
         </div>
       </div>
 
+      <AnimatePresence>
+        {selectedProduct && (
+          <QuickViewModal 
+            product={selectedProduct} 
+            onClose={() => setSelectedProduct(null)} 
+          />
+        )}
+      </AnimatePresence>
+
       <Footer />
     </main>
+  );
+}
+
+function QuickViewModal({ product, onClose }: { product: Product; onClose: () => void }) {
+  const { addToCart, setIsOpen } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const { settings } = useStore();
+  const [added, setAdded] = useState(false);
+  const [qty, setQty] = useState(1);
+  const [selectedOption, setSelectedOption] = useState("Standard Edition");
+
+  const isFav = isFavorite(product.id);
+
+  const handleAddToCart = () => {
+    for (let i = 0; i < qty; i++) addToCart(product);
+    setAdded(true);
+    setIsOpen(true);
+    setTimeout(() => setAdded(false), 2000);
+  };
+
+  return (
+    <div className={styles.modalOverlay} onClick={onClose}>
+      <motion.div 
+        className={styles.modalContent} 
+        onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        transition={{ type: "spring", damping: 25, stiffness: 350 }}
+      >
+        <button className={styles.closeBtn} onClick={onClose} aria-label="Close modal">
+          <X size={20} />
+        </button>
+
+        <div className={styles.modalGrid}>
+          {/* Left: Image Container */}
+          <div className={styles.modalImageContainer}>
+            <Image 
+              src={product.image} 
+              alt={product.name} 
+              width={500} 
+              height={500} 
+              className={styles.modalImage} 
+              priority
+            />
+            {product.originalPrice && (
+              <span className={styles.modalSaleBadge}>Sale</span>
+            )}
+          </div>
+
+          {/* Right: Info */}
+          <div className={styles.modalInfoContainer}>
+            <span className={styles.modalCategory}>{product.category}</span>
+            <h2 className={styles.modalTitle}>{product.name}</h2>
+            
+            <div className={styles.modalRatingRow}>
+              <div className={styles.modalStars}>
+                <Star size={14} fill="currentColor" className={styles.starIcon} />
+                <span className={styles.modalRatingVal}>{product.rating || 4.5}</span>
+              </div>
+              <span className={styles.modalReviewsCount}>({product.reviewCount || 10} reviews)</span>
+            </div>
+
+            <div className={styles.modalPriceRow}>
+              <span className={styles.modalCurrentPrice}>{settings.currencySymbol}{product.price}</span>
+              {product.originalPrice && (
+                <>
+                  <span className={styles.modalOldPrice}>{settings.currencySymbol}{product.originalPrice}</span>
+                  <span className={styles.modalDiscountPercent}>
+                    {Math.round((1 - Number(product.price)/Number(product.originalPrice)) * 100)}% OFF
+                  </span>
+                </>
+              )}
+            </div>
+
+            <p className={styles.modalDescription}>
+              {product.description || "Premium product sourced globally by MARTS."}
+            </p>
+
+            {/* Options */}
+            <div className={styles.modalOptionsSection}>
+              <span className={styles.modalSectionLabel}>Select Pack</span>
+              <div className={styles.modalOptionsList}>
+                {["Standard Edition", "Premium Pack"].map(opt => (
+                  <button 
+                    key={opt} 
+                    className={`${styles.modalOptionBtn} ${selectedOption === opt ? styles.modalOptionBtnActive : ""}`}
+                    onClick={() => setSelectedOption(opt)}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className={styles.modalActionsRow}>
+              <div className={styles.modalQtyControls}>
+                <button onClick={() => setQty(Math.max(1, qty - 1))} className={styles.qtyBtn}>−</button>
+                <span className={styles.modalQty}>{qty}</span>
+                <button onClick={() => setQty(qty + 1)} className={styles.qtyBtn}>+</button>
+              </div>
+
+              <button 
+                className={`${styles.modalAddBtn} ${added ? styles.modalAddBtnSuccess : ""}`}
+                onClick={handleAddToCart}
+              >
+                <ShoppingCart size={18} />
+                {added ? "Added!" : "Add to Cart"}
+              </button>
+
+              <button 
+                className={`${styles.modalWishlistBtn} ${isFav ? styles.modalWishlistActive : ""}`}
+                onClick={() => toggleFavorite(product.id)}
+                aria-label={isFav ? "Remove from wishlist" : "Add to wishlist"}
+              >
+                <Heart size={20} fill={isFav ? "currentColor" : "none"} />
+              </button>
+            </div>
+
+            <div className={styles.modalFooterLink}>
+              <Link href={`/products/${product.id}`} className={styles.viewFullDetailsLink} onClick={onClose}>
+                <Eye size={16} /> View Full Details & Specifications
+              </Link>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
   );
 }

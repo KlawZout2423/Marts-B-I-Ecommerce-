@@ -13,14 +13,19 @@ import styles from "./WishlistPage.module.css";
 export default function WishlistPage() {
   const { favorites } = useFavorites();
   const [wishlistProducts, setWishlistProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/products")
       .then((res) => res.json())
       .then((data: Product[]) => {
+        setAllProducts(data);
         const filtered = data.filter((p) => favorites.includes(p.id));
         setWishlistProducts(filtered);
+        setIsLoading(false);
+      })
+      .catch(() => {
         setIsLoading(false);
       });
   }, [favorites]);
@@ -32,6 +37,7 @@ export default function WishlistPage() {
       </Suspense>
 
       <section className={styles.hero}>
+        <div className={styles.heroGlow} />
         <div className="container">
           <h1>My Wishlist</h1>
           <p>{favorites.length} {favorites.length === 1 ? 'item' : 'items'} saved for later</p>
@@ -39,15 +45,34 @@ export default function WishlistPage() {
       </section>
 
       <div className={styles.container}>
-        {favorites.length === 0 ? (
-          <div className={styles.emptyState}>
-            <Heart size={64} className={styles.emptyIcon} />
-            <h2>Your wishlist is empty</h2>
-            <p>Save your favorite imports here to keep track of what you love.</p>
-            <Link href="/shop" className={styles.shopBtn}>
-              <ShoppingBag size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-              Start Shopping
-            </Link>
+        {isLoading ? (
+          <div className={styles.loadingState}>Loading saved items...</div>
+        ) : favorites.length === 0 ? (
+          <div className={styles.emptyStateContainer}>
+            <div className={styles.emptyState}>
+              <Heart size={64} className={styles.emptyIcon} />
+              <h2>Your wishlist is empty</h2>
+              <p>Save your favorite imports here to keep track of what you love.</p>
+              <Link href="/shop" className={styles.shopBtn}>
+                <ShoppingBag size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                Start Shopping
+              </Link>
+            </div>
+
+            {/* Recommended Section */}
+            {allProducts.length > 0 && (
+              <div className={styles.recommendedSection}>
+                <h3 className={styles.recommendedTitle}>✦ Trending Premium Imports</h3>
+                <div className={styles.recommendedGrid}>
+                  {allProducts
+                    .filter(p => !favorites.includes(p.id))
+                    .slice(0, 4)
+                    .map((product, idx) => (
+                      <ProductCard key={product.id} product={product} index={idx} />
+                    ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className={styles.grid}>

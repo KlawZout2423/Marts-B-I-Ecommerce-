@@ -8,3 +8,41 @@
   position: relative;
   z-index: 1001;
 }
+
+.text {
+  display: inline-block;
+  transition: all 0.25s ease;
+}
+
+.editable {
+  outline: none;
+  border: 1px dashed rgba(255, 255, 255, 0.4);
+  padding: 2px 10px;
+  border-radius: 6px;
+  cursor: text;
+  background: rgba(255, 255, 255, 0.08);
+  min-width: 200px;
+}
+
+.editable:hover {
+  border-color: #38bdf8;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.editable:focus {
+  border-color: #38bdf8;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+@media (max-width: 600px) {
+  .banner {
+    padding: 6px 0;
+    font-size: 12px;
+  }
+  
+  .editable {
+    min-width: 150px;
+    padding: 1px 6px;
+  }
+}

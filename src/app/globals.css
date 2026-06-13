@@ -152,6 +152,9 @@ img {
   body {
     padding-bottom: 120px;
   }
+  .container {
+    padding: 0 12px !important;
+  }
 }
 
 .editable {

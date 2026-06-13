@@ -46,6 +46,7 @@
   line-height: 1.05;
   margin-bottom: 24px;
   letter-spacing: -0.04em;
+  white-space: pre-line;
 }
 
 .titleHighlight {
@@ -308,13 +309,13 @@
 
 @media (max-width: 1024px) {
   .hero {
-    padding: 120px 0 60px;
+    padding: 80px 0 40px;
     text-align: center;
   }
 
   .grid {
     grid-template-columns: 1fr;
-    gap: 64px;
+    gap: 40px;
   }
 
   .content {
@@ -324,7 +325,7 @@
   }
 
   .title {
-    font-size: 48px;
+    font-size: 40px;
   }
 
   .actionGroup {
@@ -342,5 +343,63 @@
     justify-content: center;
     width: 120px;
     left: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 20px 0 12px;
+    text-align: left;
+    min-height: auto !important;
+  }
+
+  .grid {
+    grid-template-columns: 1.2fr 0.8fr !important;
+    gap: 16px !important;
+    align-items: center;
+  }
+
+  .content {
+    align-items: flex-start !important;
+    text-align: left;
+  }
+
+  .pill {
+    padding: 4px 8px;
+    font-size: 10px;
+    margin-bottom: 8px;
+  }
+
+  .title {
+    font-size: 24px !important;
+    margin-bottom: 8px;
+    text-align: left;
+  }
+
+  .subtitle {
+    display: none !important; /* Hide long description to get straight to categories/products */
+  }
+
+  .actionGroup {
+    margin-top: 8px;
+    margin-bottom: 0;
+  }
+
+  .shopBtn {
+    font-size: 13px !important;
+  }
+
+  /* Hide unnecessary decorative bloat on mobile */
+  .particle,
+  .floatingBadge {
+    display: none !important;
+  }
+
+  /* Scale circle image wrapper down and position on the right side */
+  .mainImageWrapper {
+    max-width: 120px !important;
+    padding: 3px;
+    box-shadow: 0 4px 10px rgba(0, 71, 171, 0.15) !important;
+    animation: gradientShift 8s ease infinite;
   }
 }

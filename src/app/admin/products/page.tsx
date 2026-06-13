@@ -20,8 +20,28 @@ export default function InventoryPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  // Form State
+  // Smart Form State
   const [formData, setFormData] = useState<Partial<Product>>({ placements: [], category: "Uncategorized" });
+  const [isSkuManual, setIsSkuManual] = useState(false);
+  const [discountPercent, setDiscountPercent] = useState<number | null>(null);
+
+  const generateSKUPrefix = (name: string, category: string) => {
+    if (!name) return "";
+    const cleanName = name.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+    const cleanCat = category.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+    const namePart = cleanName.substring(0, 3).padEnd(3, 'X');
+    const catPart = cleanCat.substring(0, 3).padEnd(3, 'X');
+    return `${namePart}-${catPart}-${Math.floor(100 + Math.random() * 900)}`;
+  };
+
+  const calculateDiscount = (orig: string | undefined, sale: string | undefined) => {
+    const originalPrice = parseFloat(orig || "");
+    const salePrice = parseFloat(sale || "");
+    if (originalPrice && salePrice && salePrice < originalPrice) {
+      return Math.round(((originalPrice - salePrice) / originalPrice) * 100);
+    }
+    return null;
+  };
 
   const filteredProducts = products.filter(p => 
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -35,18 +55,73 @@ export default function InventoryPage() {
       name: "",
       sku: "",
       price: "",
+      salePrice: "",
       stock: 0,
       image: "",
       category: "Uncategorized",
       placements: []
     });
+    setDiscountPercent(null);
+    setIsSkuManual(false);
     setIsModalOpen(true);
   };
 
   const openEditModal = (product: Product) => {
     setEditingProduct(product);
     setFormData({ ...product });
+    setDiscountPercent(calculateDiscount(product.price, product.salePrice));
+    setIsSkuManual(true);
     setIsModalOpen(true);
+  };
+
+  const handleNameChange = (nameVal: string) => {
+    const updatedForm = { ...formData, name: nameVal };
+    if (!isSkuManual) {
+      updatedForm.sku = generateSKUPrefix(nameVal, formData.category || "Uncategorized");
+    }
+    setFormData(updatedForm);
+  };
+
+  const handleCategoryChange = (catVal: string) => {
+    const updatedForm = { ...formData, category: catVal };
+    if (!isSkuManual) {
+      updatedForm.sku = generateSKUPrefix(formData.name || "", catVal);
+    }
+    setFormData(updatedForm);
+  };
+
+  const handlePriceChange = (origVal: string) => {
+    const disc = calculateDiscount(origVal, formData.salePrice);
+    setDiscountPercent(disc);
+    
+    let placements = formData.placements || [];
+    if (disc && disc > 0 && !placements.includes("hot_sale")) {
+      placements = [...placements, "hot_sale"];
+    }
+
+    setFormData({
+      ...formData,
+      price: origVal,
+      placements
+    });
+  };
+
+  const handleSalePriceChange = (saleVal: string) => {
+    const disc = calculateDiscount(formData.price, saleVal);
+    setDiscountPercent(disc);
+
+    let placements = formData.placements || [];
+    if (disc && disc > 0 && !placements.includes("hot_sale")) {
+      placements = [...placements, "hot_sale"];
+    } else if (!saleVal && placements.includes("hot_sale")) {
+      placements = placements.filter(p => p !== "hot_sale");
+    }
+
+    setFormData({
+      ...formData,
+      salePrice: saleVal,
+      placements
+    });
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,7 +208,35 @@ export default function InventoryPage() {
                       <div style={{ fontSize: '11px', color: '#64748b' }}>{product.sku}</div>
                     </div>
                   </td>
-                  <td style={{ fontWeight: 600 }}>${product.price}</td>
+                  <td>
+                    {product.salePrice ? (
+                      <div>
+                        <span style={{ color: '#ef4444', fontWeight: 700 }}>${parseFloat(product.salePrice).toFixed(2)}</span>
+                        <span style={{ 
+                          fontSize: '11px', 
+                          textDecoration: 'line-through', 
+                          color: '#94a3b8', 
+                          marginLeft: '6px',
+                          fontWeight: 400
+                        }}>${parseFloat(product.price).toFixed(2)}</span>
+                        {calculateDiscount(product.price, product.salePrice) && (
+                          <span style={{ 
+                            fontSize: '9px', 
+                            background: '#fee2e2', 
+                            color: '#ef4444', 
+                            padding: '2px 4px', 
+                            borderRadius: '4px', 
+                            marginLeft: '6px',
+                            fontWeight: 700
+                          }}>
+                            -{calculateDiscount(product.price, product.salePrice)}%
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span style={{ fontWeight: 600 }}>${parseFloat(product.price).toFixed(2)}</span>
+                    )}
+                  </td>
                   <td>{product.stock} units</td>
                   <td>
                     <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
@@ -157,7 +260,7 @@ export default function InventoryPage() {
         </div>
       </div>
 
-      {/* --- MODAL (Same as before but using context) --- */}
+      {/* --- MODAL Drawer --- */}
       {isModalOpen && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -191,13 +294,55 @@ export default function InventoryPage() {
                 <input id="fileInput" type="file" style={{ display: 'none' }} onChange={handleFileUpload} accept="image/*" />
               </div>
 
-              <div className={styles.inputGroup}><label>Name</label><input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} /></div>
+              <div className={styles.inputGroup}>
+                <label>Name</label>
+                <input 
+                  type="text" 
+                  value={formData.name || ""} 
+                  onChange={(e) => handleNameChange(e.target.value)} 
+                  placeholder="e.g. Sony WH-1000XM5"
+                  required
+                />
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label>SKU (Stock Keeping Unit)</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input 
+                    type="text" 
+                    value={formData.sku || ""} 
+                    onChange={(e) => {
+                      setIsSkuManual(true);
+                      setFormData({...formData, sku: e.target.value.toUpperCase()});
+                    }}
+                    style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', textTransform: 'uppercase' }}
+                    placeholder="Auto-generated as you type"
+                  />
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      setIsSkuManual(false);
+                      setFormData(prev => ({
+                        ...prev, 
+                        sku: generateSKUPrefix(prev.name || "", prev.category || "Uncategorized")
+                      }));
+                    }}
+                    style={{ 
+                      padding: '0 12px', borderRadius: '8px', border: '1px solid #cbd5e1', 
+                      background: '#f8fafc', fontSize: '12px', fontWeight: 600, cursor: 'pointer'
+                    }}
+                  >
+                    Regen
+                  </button>
+                </div>
+              </div>
+
               <div className={styles.inputGroup}>
                 <label>Category</label>
                 <select 
                   value={formData.category} 
-                  onChange={(e) => setFormData({...formData, category: e.target.value})}
-                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', background: 'white' }}
                 >
                   <option value="Uncategorized">Select Category</option>
                   <option value="Men">Men</option>
@@ -208,7 +353,66 @@ export default function InventoryPage() {
                   <option value="Toys">Toys</option>
                 </select>
               </div>
-              <div className={styles.inputGroup}><label>Price ($)</label><input type="number" value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} /></div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div className={styles.inputGroup}>
+                  <label>Original Price ($)</label>
+                  <input 
+                    type="number" 
+                    step="any"
+                    value={formData.price || ""} 
+                    onChange={(e) => handlePriceChange(e.target.value)} 
+                    required
+                  />
+                </div>
+                <div className={styles.inputGroup}>
+                  <label>Sale Price ($) (Optional)</label>
+                  <input 
+                    type="number" 
+                    step="any"
+                    value={formData.salePrice || ""} 
+                    onChange={(e) => handleSalePriceChange(e.target.value)} 
+                    placeholder="Discount price"
+                  />
+                </div>
+              </div>
+
+              {discountPercent !== null && discountPercent > 0 && (
+                <div style={{ 
+                  background: 'rgba(34, 197, 94, 0.08)', 
+                  border: '1px solid rgba(34, 197, 94, 0.2)',
+                  borderRadius: '8px', 
+                  padding: '10px 14px', 
+                  fontSize: '12px', 
+                  color: '#16a34a',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}>
+                  <span>Discount Active: {discountPercent}% Off</span>
+                  <span style={{ 
+                    fontSize: '10px', 
+                    background: '#22c55e', 
+                    color: 'white', 
+                    padding: '2px 6px', 
+                    borderRadius: '4px',
+                    textTransform: 'uppercase'
+                  }}>
+                    Auto Hot-Sale On
+                  </span>
+                </div>
+              )}
+
+              <div className={styles.inputGroup}>
+                <label>Stock Quantity</label>
+                <input 
+                  type="number" 
+                  value={formData.stock} 
+                  onChange={(e) => setFormData({...formData, stock: parseInt(e.target.value) || 0})} 
+                  required
+                />
+              </div>
               
               <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                 <label style={{ fontSize: '13px', fontWeight: 700, marginBottom: '12px', display: 'block' }}>Storefront Arrangement</label>
@@ -218,7 +422,7 @@ export default function InventoryPage() {
                     return (
                       <div key={opt.id} onClick={() => togglePlacement(opt.id)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', background: 'white', border: `1px solid ${isSelected ? '#0ea5e9' : '#e2e8f0'}`, borderRadius: '8px', cursor: 'pointer' }}>
                         <div style={{ width: '18px', height: '18px', borderRadius: '4px', background: isSelected ? '#0ea5e9' : 'white', border: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          {isSelected && <Check size={12} color="white" />}
+                          {isSelected && <Check size={12} color="white" style={{ display: 'block', margin: 'auto' }} />}
                         </div>
                         <span style={{ fontSize: '13px', fontWeight: 500 }}>{opt.label}</span>
                       </div>
@@ -230,7 +434,7 @@ export default function InventoryPage() {
 
             <footer style={{ display: 'flex', gap: '12px', paddingTop: '20px', borderTop: '1px solid #e2e8f0' }}>
               <button className={styles.primaryBtn} style={{ flex: 1, justifyContent: 'center' }} onClick={handleSave}>Save</button>
-              <button style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', background: 'white' }} onClick={() => setIsModalOpen(false)}>Cancel</button>
+              <button style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', background: 'white', cursor: 'pointer' }} onClick={() => setIsModalOpen(false)}>Cancel</button>
             </footer>
           </div>
         </div>

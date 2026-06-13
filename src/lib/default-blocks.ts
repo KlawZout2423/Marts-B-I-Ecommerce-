@@ -1,4 +1,19 @@
 export const DEFAULT_HOME_BLOCKS = [
+  {
+    id: "mobile-promo-default",
+    type: "mobilePromo",
+    title: "Mobile Promo Banner",
+    content: {
+      badge: "🔥 APP ONLY DEALS",
+      title: "Exclusive Mobile Offer",
+      subtitle: "Get 15% off all orders with code MOBILE15",
+      ctaText: "Shop Sale",
+      ctaLink: "/shop?filter=sale",
+      bgGradient: "linear-gradient(135deg, #0047AB 0%, #002D62 100%)",
+      imageUrl: "",
+      theme: "dark"
+    }
+  },
   { 
     id: "hero-default", 
     type: "hero", 
@@ -27,6 +42,7 @@ export const DEFAULT_HOME_BLOCKS = [
       subtitle2: "Shop the latest tech"
     }
   },
+
   { 
     id: "bestsellers-default", 
     type: "bestsellers", 

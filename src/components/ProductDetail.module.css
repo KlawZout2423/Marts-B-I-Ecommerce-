@@ -491,3 +491,109 @@
     padding: 16px;
   }
 }
+
+/* Color swatches tactile selectors */
+.colorSwatchList {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.colorSwatchBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1.5px solid #e2e8f0;
+  background: white;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.colorSwatchBtn:hover {
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.colorSwatchBtnActive {
+  border-color: #0047AB;
+  color: #0047AB;
+  background: rgba(0, 71, 171, 0.04);
+  box-shadow: 0 4px 12px rgba(0, 71, 171, 0.05);
+}
+
+.colorSwatchDot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  display: block;
+}
+
+.colorSwatchName {
+  font-size: 0.85rem;
+}
+
+/* Shipping / Delivery widget */
+.deliveryWidget {
+  background: rgba(0, 71, 171, 0.04);
+  border: 1px solid rgba(0, 71, 171, 0.15);
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 32px;
+}
+
+.deliveryStatusRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0047AB;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.deliveryTruckIcon {
+  color: #0047AB;
+}
+
+.deliveryDetailText {
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.deliveryDetailText strong {
+  color: #0f172a;
+}
+
+/* Trust checkpoints below purchase block */
+.trustCheckpoints {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  background: #f8fafc;
+  border-radius: 20px;
+  border: 1px solid #f1f5f9;
+  margin-bottom: 40px;
+}
+
+.trustCheckItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.checkIcon {
+  color: #22c55e;
+}

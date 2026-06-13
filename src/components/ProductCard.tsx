@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ShoppingBag, Star, Heart, Trash2 } from "lucide-react";
+import { ShoppingBag, Heart, Trash2 } from "lucide-react";
 import { Product } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { useFavorites } from "@/context/FavoritesContext";
@@ -18,9 +18,10 @@ interface ProductCardProps {
   product: Product;
   index?: number;
   className?: string;
+  onQuickView?: (product: Product) => void;
 }
 
-export default function ProductCard({ product, index = 0, className }: ProductCardProps) {
+export default function ProductCard({ product, index = 0, className, onQuickView }: ProductCardProps) {
   const { addToCart, setIsOpen } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
   const { isEditMode } = useEditMode();
@@ -28,6 +29,9 @@ export default function ProductCard({ product, index = 0, className }: ProductCa
   const router = useRouter();
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const gallery: string[] = Array.isArray((product as any).gallery) ? (product as any).gallery : [];
+  const hasSecondary = gallery.length > 0;
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -95,13 +99,29 @@ export default function ProductCard({ product, index = 0, className }: ProductCa
     >
       {/* Image */}
       <div className={styles.imageContainer}>
+        {/* Primary image */}
         <Image
           src={product.image}
           alt={product.name}
           width={400}
           height={400}
-          className={styles.image}
+          className={`${styles.image} ${styles.primaryImage} ${hasSecondary ? styles.hasDualImage : ""}`}
         />
+
+        {/* Secondary hover image (gallery[0]) */}
+        {hasSecondary && (
+          <Image
+            src={(product as any).gallery[0]}
+            alt={`${product.name} – alternate view`}
+            width={400}
+            height={400}
+            className={styles.secondaryImage}
+          />
+        )}
+        {/* Sale badge on image */}
+        {product.originalPrice && Number(product.originalPrice) !== Number(product.price) && (
+          <span className={styles.saleBadge}>Sale</span>
+        )}
 
         {/* Heart / Favourite */}
         <button
@@ -135,6 +155,15 @@ export default function ProductCard({ product, index = 0, className }: ProductCa
           </div>
         )}
 
+        {onQuickView && (
+          <button 
+            className={styles.quickViewBtn} 
+            onClick={(e) => { e.stopPropagation(); onQuickView(product); }}
+          >
+            Quick View
+          </button>
+        )}
+
         {/* Slide-up Add to Cart bar */}
         <button className={styles.cartBar} onClick={handleQuickAdd}>
           <ShoppingBag size={16} />
@@ -146,16 +175,21 @@ export default function ProductCard({ product, index = 0, className }: ProductCa
       <div className={styles.details}>
         <h3 className={styles.name}>{product.name}</h3>
 
+        {/* Price row: price + strikethrough + cart button */}
         <div className={styles.priceRow}>
           <div className={styles.pricing}>
-            <span className={styles.currentPrice}>{settings.currencySymbol}{product.price}</span>
+            <span className={styles.currentPrice}>
+              {settings.currencySymbol}{product.price}
+            </span>
             {product.originalPrice && Number(product.originalPrice) !== Number(product.price) && (
-              <span className={styles.oldPrice}>{settings.currencySymbol}{product.originalPrice}</span>
+              <span className={styles.oldPrice}>
+                {settings.currencySymbol}{product.originalPrice}
+              </span>
             )}
           </div>
-          
-          <button 
-            className={styles.mobileAddBtn}
+
+          <button
+            className={styles.roundCartBtn}
             onClick={handleQuickAdd}
             aria-label="Add to cart"
           >
@@ -163,12 +197,30 @@ export default function ProductCard({ product, index = 0, className }: ProductCa
           </button>
         </div>
 
-        <div className={styles.statsRow}>
-          <div className={styles.rating}>
-            <Star size={10} fill="#f59e0b" color="#f59e0b" />
-            <span>{product.rating}</span>
+        {/* Sold count + stock progress bar + optional best-seller label */}
+        <div className={styles.stockProgressArea}>
+          {product.stock !== undefined && (
+            <div className={styles.stockProgressContainer}>
+              <div 
+                className={`${styles.stockProgressBar} ${
+                  product.stock <= 5 ? styles.stockBarRed : 
+                  product.stock <= 10 ? styles.stockBarOrange : 
+                  styles.stockBarGreen
+                }`}
+                style={{ width: `${Math.min(100, Math.max(10, (product.stock / 20) * 100))}%` }}
+              />
+            </div>
+          )}
+          <div className={styles.statsRow}>
+            <span className={`${styles.soldCount} ${product.stock && product.stock <= 5 ? styles.limitedStockText : ""}`}>
+              {product.stock && product.stock <= 5 ? `🔥 Only ${product.stock} left!` :
+               product.stock && product.stock <= 10 ? `⚡ Selling fast! (${product.stock} left)` :
+               `✨ ${product.stock || 0} in stock`}
+            </span>
+            {((product as any).placements?.includes("bestseller") || product.badge === "Best Seller") && (
+              <span className={styles.bestSellerLabel}>Best Seller</span>
+            )}
           </div>
-          <div className={styles.soldBadge}>100+ sold</div>
         </div>
       </div>
     </motion.div>

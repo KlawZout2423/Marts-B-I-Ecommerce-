@@ -41,7 +41,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, price, stock, image, placements, category, sku } = body;
+    const { name, price, stock, image, placements, category, sku, salePrice } = body;
 
     const product = await prisma.product.create({
       data: {
@@ -49,6 +49,7 @@ export async function POST(request: Request) {
         slug: name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + '-' + Math.random().toString(36).substr(2, 5),
         sku: sku || `SKU-${Date.now()}`,
         price: price.toString(),
+        salePrice: salePrice ? salePrice.toString() : null,
         stock: parseInt(stock) || 0,
         status: "active",
         image: image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80",

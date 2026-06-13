@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Heart, ArrowLeft, Shield, Truck, RotateCcw, Star, ChevronRight } from "lucide-react";
+import { ShoppingCart, Heart, ArrowLeft, Shield, Truck, RotateCcw, Star, ChevronRight, CheckCircle2 } from "lucide-react";
 import { Product } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { useFavorites } from "@/context/FavoritesContext";
@@ -18,6 +18,27 @@ export default function ProductDetail({ product }: { product: Product }) {
   const [added, setAdded] = useState(false);
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState<'details' | 'reviews' | 'shipping'>('details');
+  const [selectedPack, setSelectedPack] = useState('Standard Edition');
+  const [selectedColor, setSelectedColor] = useState('Sleek Charcoal');
+  const [timeLeft, setTimeLeft] = useState({ hours: 4, minutes: 12, seconds: 35 });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
+        if (prev.minutes > 0) return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
+        if (prev.hours > 0) return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
+        return { hours: 4, minutes: 59, seconds: 59 };
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const getDeliveryDate = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 6);
+    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+  };
 
   const handleAddToCart = () => {
     for (let i = 0; i < qty; i++) addToCart(product);
@@ -117,15 +138,51 @@ export default function ProductDetail({ product }: { product: Product }) {
               )}
             </div>
 
-            {/* Product Variants (Simplified for consistent look) */}
+            {/* Product Variants (Cohesive & Tactile Look) */}
             <div className={styles.variantSection}>
-              <h4 className={styles.variantTitle}>Select Options</h4>
+              <h4 className={styles.variantTitle}>Select Pack</h4>
               <div className={styles.variantGrid}>
                 {['Standard Edition', 'Premium Pack'].map(opt => (
-                  <button key={opt} className={`${styles.variantBtn} ${opt === 'Standard Edition' ? styles.activeVariant : ''}`}>
+                  <button 
+                    key={opt} 
+                    className={`${styles.variantBtn} ${selectedPack === opt ? styles.activeVariant : ''}`}
+                    onClick={() => setSelectedPack(opt)}
+                  >
                     {opt}
                   </button>
                 ))}
+              </div>
+            </div>
+
+            <div className={styles.variantSection}>
+              <h4 className={styles.variantTitle}>Select Finish</h4>
+              <div className={styles.colorSwatchList}>
+                {[
+                  { name: 'Sleek Charcoal', hex: '#1e293b' },
+                  { name: 'Ocean Blue', hex: '#0047AB' },
+                  { name: 'Royal Gold', hex: '#d97706' }
+                ].map(col => (
+                  <button 
+                    key={col.name}
+                    className={`${styles.colorSwatchBtn} ${selectedColor === col.name ? styles.colorSwatchBtnActive : ''}`}
+                    onClick={() => setSelectedColor(col.name)}
+                    title={col.name}
+                  >
+                    <span className={styles.colorSwatchDot} style={{ backgroundColor: col.hex }} />
+                    <span className={styles.colorSwatchName}>{col.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 🚚 Shipping Estimator Widget */}
+            <div className={styles.deliveryWidget}>
+              <div className={styles.deliveryStatusRow}>
+                <Truck size={16} className={styles.deliveryTruckIcon} />
+                <span>Express Sourced Import Delivery</span>
+              </div>
+              <div className={styles.deliveryDetailText}>
+                Get it by <strong>{getDeliveryDate()}</strong> if you order within the next <strong>{timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s</strong>!
               </div>
             </div>
 
@@ -155,6 +212,22 @@ export default function ProductDetail({ product }: { product: Product }) {
                 >
                   <Heart size={24} fill={isFav ? "currentColor" : "none"} />
                 </button>
+              </div>
+            </div>
+
+            {/* Trust Checkpoints */}
+            <div className={styles.trustCheckpoints}>
+              <div className={styles.trustCheckItem}>
+                <CheckCircle2 size={16} className={styles.checkIcon} />
+                <span>Free express shipping on all orders over $50</span>
+              </div>
+              <div className={styles.trustCheckItem}>
+                <CheckCircle2 size={16} className={styles.checkIcon} />
+                <span>Certified source verification & sourcing logs</span>
+              </div>
+              <div className={styles.trustCheckItem}>
+                <CheckCircle2 size={16} className={styles.checkIcon} />
+                <span>30-day money-back satisfaction guarantee</span>
               </div>
             </div>
 

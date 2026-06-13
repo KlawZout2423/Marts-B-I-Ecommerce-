@@ -8,7 +8,6 @@ import { EditModeProvider } from "@/context/EditModeContext";
 import { InventoryProvider } from "@/context/InventoryContext";
 import { StoreProvider } from "@/context/StoreContext";
 import VisualSaveBar from "@/components/VisualSaveBar";
-import BackButton from "@/components/BackButton";
 
 
 
@@ -40,7 +39,6 @@ export default function RootLayout({
                   <CartSidebar />
                   <MobileBottomNav />
                   <VisualSaveBar />
-                  <BackButton />
                 </EditModeProvider>
               </InventoryProvider>
             </FavoritesProvider>

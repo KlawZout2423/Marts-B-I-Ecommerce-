@@ -140,20 +140,49 @@
 
 /* ── Responsive ────────────────────────────────────── */
 @media (max-width: 768px) {
+  .section {
+    padding: 12px 0;
+  }
+
   .grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    display: flex !important;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    gap: 12px;
+    padding: 4px 12px 12px;
+    scrollbar-width: none;
+    margin: 0 -12px;
+  }
+
+  .grid::-webkit-scrollbar {
+    display: none;
   }
 
   .card {
-    min-height: 220px;
+    min-height: 150px;
+    min-width: 280px;
+    width: 280px;
+    scroll-snap-align: start;
+    flex-shrink: 0;
   }
 
   .content {
-    padding: 28px 24px;
+    padding: 16px 20px;
+    gap: 6px;
   }
 
   .title {
-    font-size: 22px;
+    font-size: 18px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  .cta {
+    padding: 6px 14px;
+    font-size: 11px;
+    margin-top: 2px;
   }
 }
