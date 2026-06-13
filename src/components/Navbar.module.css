@@ -53,7 +53,7 @@
 
 @media (max-width: 600px) {
   .logoImage {
-    height: 40px;
+    height: 44px;
   }
 }
 
@@ -213,16 +213,16 @@
 }
 
 .userInitials {
-  width: 38px;
-  height: 38px;
+  width: 35px;
+  height: 35px;
   background: linear-gradient(135deg, #0047AB 0%, #002D62 100%);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 50%;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   border: 2px solid transparent;
   transition: all 0.2s ease;
 }
@@ -486,6 +486,7 @@
   }
   .navContainer {
     gap: 0.5rem;
+    align-items: center;
   }
   .logo {
     flex: 1;
